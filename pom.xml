@@ -135,6 +135,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>org.kiwiproject</groupId>
+            <artifactId>kiwi</artifactId>
+            <version>${kiwi.version}</version>
+        </dependency>
+
         <!-- provided dependencies -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -177,13 +183,6 @@
                     <artifactId>classmate</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.kiwiproject</groupId>
-            <artifactId>kiwi</artifactId>
-            <version>${kiwi.version}</version>
-            <scope>provided</scope>
         </dependency>
 
         <dependency>
