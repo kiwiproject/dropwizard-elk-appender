@@ -10,6 +10,7 @@ import io.dropwizard.logging.async.AsyncLoggingEventAppenderFactory;
 import io.dropwizard.logging.filter.ThresholdLevelFilterFactory;
 import net.logstash.logback.appender.LogstashUdpSocketAppender;
 import net.logstash.logback.layout.LogstashLayout;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,30 +20,39 @@ import java.util.Map;
 class ElkAppenderFactoryTest {
     private static final String APP_NAME = "aTestApp";
 
+    private LoggerContext loggerContext;
+    private ThresholdLevelFilterFactory filterFactory;
+    private AsyncLoggingEventAppenderFactory appenderFactory;
+
+    @BeforeEach
+    void setUp() {
+        loggerContext = new LoggerContext();
+        filterFactory = new ThresholdLevelFilterFactory();
+        appenderFactory = new AsyncLoggingEventAppenderFactory();
+    }
+
     @Test
-    @SuppressWarnings("java:S5778")
     void shouldFail_WhenHostIsMissing() {
         var factory = new ElkAppenderFactory();
-        assertThatThrownBy(() -> factory.build(new LoggerContext(),
+        assertThatThrownBy(() -> factory.build(loggerContext,
                     APP_NAME,
                     null,
-                    new ThresholdLevelFilterFactory(),
-                    new AsyncLoggingEventAppenderFactory()))
+                    filterFactory,
+                    appenderFactory))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("host must not be blank");
     }
 
     @Test
-    @SuppressWarnings("java:S5778")
     void shouldFail_WhenPortIsMissing() {
         var factory = new ElkAppenderFactory();
         factory.setHost("localhost");
 
-        assertThatThrownBy(() -> factory.build(new LoggerContext(),
+        assertThatThrownBy(() -> factory.build(loggerContext,
                     APP_NAME,
                     null,
-                    new ThresholdLevelFilterFactory(),
-                    new AsyncLoggingEventAppenderFactory()))
+                    filterFactory,
+                    appenderFactory))
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("port must be greater than zero");
     }
@@ -53,11 +63,11 @@ class ElkAppenderFactoryTest {
         factory.setHost("localhost");
         factory.setPort(9000);
 
-        var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(new LoggerContext(),
+        var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
                 APP_NAME,
                 null,
-                new ThresholdLevelFilterFactory(),
-                new AsyncLoggingEventAppenderFactory());
+                filterFactory,
+                appenderFactory);
 
         assertThat(appender.getAppender("elk")).isInstanceOf(LogstashUdpSocketAppender.class);
     }
@@ -69,11 +79,11 @@ class ElkAppenderFactoryTest {
         factory.setPort(9000);
         factory.setCustomFields(Map.of("test", "@test"));
 
-        var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(new LoggerContext(),
+        var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
                 APP_NAME,
                 null,
-                new ThresholdLevelFilterFactory(),
-                new AsyncLoggingEventAppenderFactory());
+                filterFactory,
+                appenderFactory);
 
         var elkAppender = (LogstashUdpSocketAppender) appender.getAppender("elk");
         var elkLayout = (LogstashLayout) elkAppender.getLayout();
@@ -87,11 +97,11 @@ class ElkAppenderFactoryTest {
         factory.setPort(9000);
         factory.setFieldNames(Map.of("timestamp", "123456"));
 
-        var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(new LoggerContext(),
+        var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
                 APP_NAME,
                 null,
-                new ThresholdLevelFilterFactory(),
-                new AsyncLoggingEventAppenderFactory());
+                filterFactory,
+                appenderFactory);
 
         var elkAppender = (LogstashUdpSocketAppender) appender.getAppender("elk");
         var elkLayout = (LogstashLayout) elkAppender.getLayout();
