@@ -69,7 +69,6 @@
         <logstash.version>6.4</logstash.version>
 
         <!-- Versions for provided dependencies -->
-        <guava.version>28.2-jre</guava.version>
         <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
         <jackson.version>2.10.5</jackson.version>
         <kiwi.version>0.8.0</kiwi.version>
@@ -151,23 +150,6 @@
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.errorprone</groupId>
-                    <artifactId>error_prone_annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.checkerframework</groupId>
-                    <artifactId>checker-qual</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
