@@ -67,11 +67,11 @@
         <!-- Versions for required dependencies -->
         <dropwizard.version>2.0.12</dropwizard.version>
         <logstash.version>6.4</logstash.version>
+        <kiwi.version>0.8.0</kiwi.version>
 
         <!-- Versions for provided dependencies -->
         <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
         <jackson.version>2.10.5</jackson.version>
-        <kiwi.version>0.8.0</kiwi.version>
         <lombok.version>1.18.12</lombok.version>
 
         <!-- Versions for test dependencies -->
