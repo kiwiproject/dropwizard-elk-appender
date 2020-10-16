@@ -11,7 +11,7 @@ updates:
       - "sleberknight"
       - "chrisrohr"
     allow:
-      - dependency-name: "io.kiwiproject:*"
+      - dependency-name: "org.kiwiproject:*"
       - dependency-name: "io.dropwizard:*"
       - dependency-name: "org.projectlombok:lombok"
       - dependency-name: "org.assertj:assertj-core"
