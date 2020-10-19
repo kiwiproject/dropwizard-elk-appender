@@ -16,7 +16,7 @@ Install library with Maven:
     <dependency>
         <groupId>org.kiwiproject</groupId>
         <artifactId>dropwizard-elk-appender</artifactId>
-        <version>0.9.0</version>
+        <version>0.10.0</version>
     </dependency>
 ```
 
