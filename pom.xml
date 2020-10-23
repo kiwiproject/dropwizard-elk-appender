@@ -28,12 +28,12 @@
 
     <properties>
         <!-- Versions for required dependencies -->
-        <dropwizard.version>2.0.13</dropwizard.version>
+        <dropwizard.version>2.0.14</dropwizard.version>
         <logstash.version>6.4</logstash.version>
-        <kiwi.version>0.12.0</kiwi.version>
+        <kiwi.version>0.13.0</kiwi.version>
 
         <!-- Versions for provided dependencies -->
-        <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
+        <hibernate-validator.version>6.1.6.Final</hibernate-validator.version>
         <jackson.version>2.10.5</jackson.version>
 
     </properties>
