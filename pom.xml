@@ -36,6 +36,11 @@
         <hibernate-validator.version>6.1.6.Final</hibernate-validator.version>
         <jackson.version>2.10.5</jackson.version>
 
+        <!-- Sonar Properties -->
+        <sonar.projectKey>kiwiproject_dropwizard-elk-appender</sonar.projectKey>
+        <sonar.organization>kiwiproject</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
     </properties>
 
     <dependencies>
