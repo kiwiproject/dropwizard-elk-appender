@@ -1,5 +1,5 @@
 ### Dropwizard ELK Appender
-[![Build Status](https://travis-ci.com/kiwiproject/dropwizard-elk-appender.svg?branch=master)](https://travis-ci.com/kiwiproject/dropwizard-elk-appender)
+[![Build](https://github.com/kiwiproject/dropwizard-elk-appender/workflows/build/badge.svg)](https://github.com/kiwiproject/dropwizard-elk-appender/actions?query=workflow%3Abuild)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=kiwiproject_dropwizard-elk-appender&metric=alert_status)](https://sonarcloud.io/dashboard?id=kiwiproject_dropwizard-elk-appender)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=kiwiproject_dropwizard-elk-appender&metric=coverage)](https://sonarcloud.io/dashboard?id=kiwiproject_dropwizard-elk-appender)
 [![javadoc](https://javadoc.io/badge2/org.kiwiproject/dropwizard-elk-appender/javadoc.svg)](https://javadoc.io/doc/org.kiwiproject/dropwizard-elk-appender)
