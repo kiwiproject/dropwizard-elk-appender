@@ -29,6 +29,7 @@
     <properties>
         <!-- Versions for required dependencies -->
         <dropwizard.version>2.0.16</dropwizard.version>
+        <dropwizard-config-providers.version>0.9.0</dropwizard-config-providers.version>
         <logstash.version>6.4</logstash.version>
         <kiwi.version>0.17.0</kiwi.version>
 
@@ -84,6 +85,12 @@
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kiwiproject</groupId>
+            <artifactId>dropwizard-config-providers</artifactId>
+            <version>${dropwizard-config-providers.version}</version>
         </dependency>
 
         <dependency>
