@@ -1,8 +1,8 @@
 package org.kiwiproject.elk;
 
 import static com.google.common.base.Preconditions.checkState;
-import static org.kiwiproject.base.KiwiPreconditions.requireNotBlank;
 import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
+import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -17,6 +17,7 @@ import net.logstash.logback.appender.LogstashTcpSocketAppender;
 import net.logstash.logback.appender.LogstashUdpSocketAppender;
 import net.logstash.logback.encoder.LogstashEncoder;
 import net.logstash.logback.layout.LogstashLayout;
+import org.kiwiproject.config.provider.ElkLoggerConfigProvider;
 import org.kiwiproject.json.JsonHelper;
 
 import java.util.HashMap;
@@ -28,14 +29,14 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
 
     private static final JsonHelper JSON_HELPER = JsonHelper.newDropwizardJsonHelper();
 
-    private String host;
-    private int port;
     private boolean useUdp;
     private boolean includeCallerData;
     private boolean includeContext = true;
     private boolean includeMdc = true;
     private Map<String, String> customFields = new HashMap<>();
     private Map<String, String> fieldNames = new HashMap<>();
+
+    private ElkLoggerConfigProvider elkLoggerConfigProvider = ElkLoggerConfigProvider.builder().build();
 
     @Override
     public Appender<ILoggingEvent> build(LoggerContext loggerContext,
@@ -44,8 +45,11 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
                                          LevelFilterFactory<ILoggingEvent> levelFilterFactory,
                                          AsyncAppenderFactory<ILoggingEvent> asyncAppenderFactory) {
 
-        requireNotBlank(host, "host must not be blank");
-        checkState(port > 0, "port must be greater than zero");
+        checkState(elkLoggerConfigProvider.canProvide(), "Unable to find ELK host and port from ElkLoggerConfigProvider");
+
+        if (isNullOrEmpty(customFields)) {
+            customFields = elkLoggerConfigProvider.getCustomFields();
+        }
 
         var appender = useUdp ? createUdpAppender() : createTcpAppender();
 
@@ -73,7 +77,7 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
         }
 
         var appender = new LogstashTcpSocketAppender();
-        appender.addDestination(host + ":" + port);
+        appender.addDestination(elkLoggerConfigProvider.getHost() + ":" + elkLoggerConfigProvider.getPort());
         appender.setEncoder(encoder);
 
         return appender;
@@ -95,8 +99,8 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
         }
 
         var appender = new LogstashUdpSocketAppender();
-        appender.setHost(host);
-        appender.setPort(port);
+        appender.setHost(elkLoggerConfigProvider.getHost());
+        appender.setPort(elkLoggerConfigProvider.getPort());
         appender.setLayout(layout);
 
         return appender;

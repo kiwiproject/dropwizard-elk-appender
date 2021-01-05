@@ -29,12 +29,16 @@
     <properties>
         <!-- Versions for required dependencies -->
         <dropwizard.version>2.0.16</dropwizard.version>
+        <dropwizard-config-providers.version>0.9.0</dropwizard-config-providers.version>
         <logstash.version>6.4</logstash.version>
         <kiwi.version>0.17.0</kiwi.version>
 
         <!-- Versions for provided dependencies -->
         <hibernate-validator.version>6.1.6.Final</hibernate-validator.version>
         <jackson.version>2.10.5</jackson.version>
+
+        <!-- Versions for test dependencies -->
+        <junit-pioneer.version>1.1.0</junit-pioneer.version>
 
         <!-- Sonar Properties -->
         <sonar.projectKey>kiwiproject_dropwizard-elk-appender</sonar.projectKey>
@@ -88,6 +92,12 @@
 
         <dependency>
             <groupId>org.kiwiproject</groupId>
+            <artifactId>dropwizard-config-providers</artifactId>
+            <version>${dropwizard-config-providers.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kiwiproject</groupId>
             <artifactId>kiwi</artifactId>
             <version>${kiwi.version}</version>
         </dependency>
@@ -121,7 +131,33 @@
 
         <!-- Test dependencies -->
 
-        <!-- nothing here yet...move along... -->
+        <dependency>
+            <groupId>org.junit-pioneer</groupId>
+            <artifactId>junit-pioneer</artifactId>
+            <version>${junit-pioneer.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-api</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.junit.jupiter</groupId>
+                    <artifactId>junit-jupiter-params</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-commons</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>org.junit.platform</groupId>
+                    <artifactId>junit-platform-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
     </dependencies>
 
