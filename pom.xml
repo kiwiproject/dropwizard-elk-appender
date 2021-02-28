@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kiwiproject</groupId>
         <artifactId>kiwi-parent</artifactId>
-        <version>0.8.0</version>
+        <version>0.9.0</version>
     </parent>
 
     <artifactId>dropwizard-elk-appender</artifactId>
@@ -29,9 +29,9 @@
     <properties>
         <!-- Versions for required dependencies -->
         <dropwizard.version>2.0.20</dropwizard.version>
-        <dropwizard-config-providers.version>0.11.0</dropwizard-config-providers.version>
+        <dropwizard-config-providers.version>0.12.0</dropwizard-config-providers.version>
         <logstash.version>6.4</logstash.version>
-        <kiwi.version>0.19.0</kiwi.version>
+        <kiwi.version>0.20.0</kiwi.version>
 
         <!-- Versions for provided dependencies -->
         <hibernate-validator.version>6.1.7.Final</hibernate-validator.version>
