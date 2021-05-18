@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.kiwiproject</groupId>
         <artifactId>kiwi-parent</artifactId>
-        <version>0.11.0</version>
+        <version>0.12.0</version>
     </parent>
 
     <artifactId>dropwizard-elk-appender</artifactId>
@@ -36,6 +36,13 @@
         <!-- Versions for provided dependencies -->
         <hibernate-validator.version>6.1.7.Final</hibernate-validator.version>
         <jackson.version>[2.10.5,2.10.6)</jackson.version>
+
+        <!--
+            TODO Cannot use 1.4.1 due to https://github.com/junit-pioneer/junit-pioneer/issues/480
+             This issue will be fixed in Pioneer 1.4.2 which as of 2021-05-18 is not released.
+             For now, overriding version to 1.4.0, which works.
+        -->
+        <junit-pioneer.version>1.4.0</junit-pioneer.version>
 
         <!-- Sonar Properties -->
         <sonar.projectKey>kiwiproject_dropwizard-elk-appender</sonar.projectKey>
