@@ -17,6 +17,8 @@ jobs:
         uses: actions/setup-java@v2.1.0
         with:
           java-version: 11
+          distribution: 'adopt'
+          check-latest: true
       - name: Cache SonarCloud packages
         uses: actions/cache@v1
         with:
