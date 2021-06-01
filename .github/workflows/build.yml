@@ -65,5 +65,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B -V -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml org.jacoco:jacoco-maven-plugin:prepare-agent package org.jacoco:jacoco-maven-plugin:report org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
