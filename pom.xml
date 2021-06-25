@@ -31,7 +31,7 @@
         <dropwizard.version>2.0.22</dropwizard.version>
         <dropwizard-config-providers.version>0.15.0</dropwizard-config-providers.version>
         <logstash.version>6.4</logstash.version>
-        <kiwi.version>0.23.0</kiwi.version>
+        <kiwi.version>0.24.0</kiwi.version>
 
         <!-- Versions for provided dependencies -->
         <hibernate-validator.version>6.1.7.Final</hibernate-validator.version>
