@@ -29,7 +29,7 @@
     <properties>
         <!-- Versions for required dependencies -->
         <dropwizard.version>2.0.23</dropwizard.version>
-        <dropwizard-config-providers.version>0.15.0</dropwizard-config-providers.version>
+        <dropwizard-config-providers.version>0.16.0</dropwizard-config-providers.version>
         <logstash.version>6.4</logstash.version>
         <kiwi.version>0.24.0</kiwi.version>
 
@@ -83,6 +83,10 @@
                 <exclusion>
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
