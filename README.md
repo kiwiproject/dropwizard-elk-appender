@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Maven Central](https://img.shields.io/maven-central/v/org.kiwiproject/dropwizard-elk-appender)](https://search.maven.org/search?q=g:org.kiwiproject%20a:dropwizard-elk-appender)
 
-Dropwizard Logging Appender to send logging events to the ELK stack
+Dropwizard Logging Appender to send logging events to the ELK stack.
 
 #### How to use
 
