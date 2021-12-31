@@ -53,12 +53,6 @@
 
     <dependencies>
 
-        <!--
-        NOTES:
-        1. Exclusions are due to version conflicts (found using Maven Enforcer plugin)
-        2. When there are version conflicts, we exclude that dependency, then add an explicit dependency.
-        -->
-
         <!-- required dependencies -->
 
         <dependency>
