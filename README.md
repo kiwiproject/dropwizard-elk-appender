@@ -5,7 +5,7 @@
 [![CodeQL](https://github.com/kiwiproject/dropwizard-elk-appender/actions/workflows/codeql.yml/badge.svg)](https://github.com/kiwiproject/dropwizard-elk-appender/actions/workflows/codeql.yml)
 [![javadoc](https://javadoc.io/badge2/org.kiwiproject/dropwizard-elk-appender/javadoc.svg)](https://javadoc.io/doc/org.kiwiproject/dropwizard-elk-appender)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Maven Central](https://img.shields.io/maven-central/v/org.kiwiproject/dropwizard-elk-appender)](https://search.maven.org/search?q=g:org.kiwiproject%20a:dropwizard-elk-appender)
+[![Maven Central](https://img.shields.io/maven-central/v/org.kiwiproject/dropwizard-elk-appender)](https://central.sonatype.com/artifact/org.kiwiproject/dropwizard-elk-appender/1.1.11)
 
 Dropwizard Logging Appender to send logging events to the ELK stack.
 
