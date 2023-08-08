@@ -34,12 +34,12 @@ Add to Dropwizard config:
 
 Properties that can be set in the config:
 
-| Property Name     | Default | Description |
-| --------------    | ------- | ----------- |
-| host (required)   | blank   | Hostname for the logstash server |
-| port (required)   | 0       | Port (greater than zero) for the logstash server |
-| includeCallerData | false   | Whether the calling data gets included in the message to logstash |
-| includeMdc        | true    | Whether to include the MDC in the message to logstash |
-| includeContext    | true    | Whether to include the logging context in the message to logstash |
+| Property Name     | Default | Description                                                         |
+|-------------------|---------|---------------------------------------------------------------------|
+| host (required)   | blank   | Hostname for the logstash server                                    |
+| port (required)   | 0       | Port (greater than zero) for the logstash server                    |
+| includeCallerData | false   | Whether the calling data gets included in the message to logstash   |
+| includeMdc        | true    | Whether to include the MDC in the message to logstash               |
+| includeContext    | true    | Whether to include the logging context in the message to logstash   |
 | customFields      | empty   | Map of custom fields that are to be sent to logstash for processing |
-| fieldNames        | empty   | Map of field name mappings if overrides are needed |
+| fieldNames        | empty   | Map of field name mappings if overrides are needed                  |
