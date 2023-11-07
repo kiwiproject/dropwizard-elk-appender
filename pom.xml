@@ -30,7 +30,7 @@
         <!-- Versions for required dependencies -->
         <dropwizard-config-providers.version>2.0.0</dropwizard-config-providers.version>
         <kiwi.version>3.1.0</kiwi.version>
-        <kiwi-bom.verson>2.0.3</kiwi-bom.verson>
+        <kiwi-bom.verson>2.0.4</kiwi-bom.verson>
 
         <!-- Sonar Properties -->
         <sonar.projectKey>kiwiproject_dropwizard-elk-appender</sonar.projectKey>
