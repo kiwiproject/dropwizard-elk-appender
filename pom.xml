@@ -28,7 +28,7 @@
 
     <properties>
         <!-- Versions for required dependencies -->
-        <dropwizard-config-providers.version>2.2.2</dropwizard-config-providers.version>
+        <dropwizard-config-providers.version>2.3.0</dropwizard-config-providers.version>
         <kiwi.version>3.3.0</kiwi.version>
         <kiwi-bom.verson>2.0.10</kiwi-bom.verson>
 
