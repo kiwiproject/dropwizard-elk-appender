@@ -17,6 +17,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.SetSystemProperty;
+import org.kiwiproject.config.provider.ResolvedBy;
 
 import java.util.Map;
 
@@ -36,29 +37,41 @@ class ElkAppenderFactoryTest {
     }
 
     @Test
-    void shouldFail_WhenHostIsMissing() {
-        var factory = new ElkAppenderFactory();
-        assertThatThrownBy(() -> factory.build(loggerContext,
-                    APP_NAME,
-                    null,
-                    filterFactory,
-                    appenderFactory))
+    void shouldFail_WhenHostAndPortAreMissing() {
+        assertThatThrownBy(() -> tryBuildFactory())
                 .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("Unable to find ELK host and port from ElkLoggerConfigProvider");
+                .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
+                        " Host resolution: %s, Port resolution: %s",
+                        ResolvedBy.NONE.name(), ResolvedBy.NONE.name());
+    }
+
+    @Test
+    @SetSystemProperty(key = "kiwi.elk.port", value = "9090")
+    void shouldFail_WhenHostIsMissing() {
+        assertThatThrownBy(() -> tryBuildFactory())
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
+                        " Host resolution: %s, Port resolution: %s",
+                        ResolvedBy.NONE.name(), ResolvedBy.SYSTEM_PROPERTY.name());
     }
 
     @Test
     @SetSystemProperty(key = "kiwi.elk.host", value = "localhost")
     void shouldFail_WhenPortIsMissing() {
-        var factory = new ElkAppenderFactory();
+        assertThatThrownBy(() -> tryBuildFactory())
+                .isExactlyInstanceOf(IllegalStateException.class)
+                .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
+                        " Host resolution: %s, Port resolution: %s",
+                        ResolvedBy.SYSTEM_PROPERTY.name(), ResolvedBy.NONE.name());
+    }
 
-        assertThatThrownBy(() -> factory.build(loggerContext,
+    private void tryBuildFactory() {
+        var factory = new ElkAppenderFactory();
+        factory.build(loggerContext,
                     APP_NAME,
                     null,
                     filterFactory,
-                    appenderFactory))
-                .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("Unable to find ELK host and port from ElkLoggerConfigProvider");
+                    appenderFactory);
     }
 
     @Nested

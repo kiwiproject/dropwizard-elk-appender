@@ -18,6 +18,7 @@ import net.logstash.logback.appender.LogstashUdpSocketAppender;
 import net.logstash.logback.encoder.LogstashEncoder;
 import net.logstash.logback.layout.LogstashLayout;
 import org.kiwiproject.config.provider.ElkLoggerConfigProvider;
+import org.kiwiproject.config.provider.ResolvedBy;
 import org.kiwiproject.json.JsonHelper;
 
 import java.util.HashMap;
@@ -45,7 +46,11 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
                                          LevelFilterFactory<ILoggingEvent> levelFilterFactory,
                                          AsyncAppenderFactory<ILoggingEvent> asyncAppenderFactory) {
 
-        checkState(elkLoggerConfigProvider.canProvide(), "Unable to find ELK host and port from ElkLoggerConfigProvider");
+        Map<String, ResolvedBy> resolvedBy = elkLoggerConfigProvider.getResolvedBy();
+        checkState(elkLoggerConfigProvider.canProvide(),
+                "Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
+                " Host resolution: %s, Port resolution: %s",
+                resolvedBy.get("host"), resolvedBy.get("port"));
 
         if (isNullOrEmpty(customFields)) {
             customFields = elkLoggerConfigProvider.getCustomFields();
