@@ -38,7 +38,7 @@ class ElkAppenderFactoryTest {
 
     @Test
     void shouldFail_WhenHostAndPortAreMissing() {
-        assertThatThrownBy(() -> tryBuildFactory())
+        assertThatThrownBy(this::tryBuildFactory)
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
                         " Host resolution: %s, Port resolution: %s",
@@ -48,7 +48,7 @@ class ElkAppenderFactoryTest {
     @Test
     @SetSystemProperty(key = "kiwi.elk.port", value = "9090")
     void shouldFail_WhenHostIsMissing() {
-        assertThatThrownBy(() -> tryBuildFactory())
+        assertThatThrownBy(this::tryBuildFactory)
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
                         " Host resolution: %s, Port resolution: %s",
@@ -58,7 +58,7 @@ class ElkAppenderFactoryTest {
     @Test
     @SetSystemProperty(key = "kiwi.elk.host", value = "localhost")
     void shouldFail_WhenPortIsMissing() {
-        assertThatThrownBy(() -> tryBuildFactory())
+        assertThatThrownBy(this::tryBuildFactory)
                 .isExactlyInstanceOf(IllegalStateException.class)
                 .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
                         " Host resolution: %s, Port resolution: %s",
