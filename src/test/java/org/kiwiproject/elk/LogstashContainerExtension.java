@@ -33,7 +33,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
             DockerImageName.parse("docker.elastic.co/logstash/logstash:9.2.0");
 
     private static final DockerImageName NETCAT_IMAGE_NAME =
-            DockerImageName.parse("toolbelt/netcat:latest");
+            DockerImageName.parse("toolbelt/netcat:2025-10-23");
 
     /**
      * The type of Logstash container.
