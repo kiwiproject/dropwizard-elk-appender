@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Starts a small Dropwizard application before all tests run, and stops
+ * Starts a small Dropwizard application before all tests run and stops
  * it after all tests have completed.
  * <p>
  * Because {@link DropwizardAppExtension} behaves badly and completely
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 public class DropwizardTestAppExtension implements BeforeAllCallback, AfterAllCallback {
 
     // NOTE:
-    // To ensure extension order is respected, we're starting and stopping the app
+    // To ensure the extension order is respected, we're starting and stopping the app
     // like a "normal" extension would by using the lifecycle callback, instead of using
     // DropwizardExtensionsSupport that does some reflective shenanigans to find fields.
     // For example, we want to ensure that Logstash starts before a Dropwizard application
