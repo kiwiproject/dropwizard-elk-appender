@@ -16,13 +16,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junitpioneer.jupiter.SetSystemProperty;
 import org.kiwiproject.config.provider.ResolvedBy;
+import org.kiwiproject.elk.LogstashContainerExtension.LogstashContainerType;
 
 import java.util.Map;
 
 @DisplayName("ElkAppenderFactory")
 class ElkAppenderFactoryTest {
+
     private static final String APP_NAME = "aTestApp";
 
     private LoggerContext loggerContext;
@@ -36,163 +39,171 @@ class ElkAppenderFactoryTest {
         appenderFactory = new AsyncLoggingEventAppenderFactory();
     }
 
-    @Test
-    void shouldFail_WhenHostAndPortAreMissing() {
-        assertThatThrownBy(this::tryBuildFactory)
-                .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
-                        " Host resolution: %s, Port resolution: %s",
-                        ResolvedBy.NONE.name(), ResolvedBy.NONE.name());
-    }
-
-    @Test
-    @SetSystemProperty(key = "kiwi.elk.port", value = "9090")
-    void shouldFail_WhenHostIsMissing() {
-        assertThatThrownBy(this::tryBuildFactory)
-                .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
-                        " Host resolution: %s, Port resolution: %s",
-                        ResolvedBy.NONE.name(), ResolvedBy.SYSTEM_PROPERTY.name());
-    }
-
-    @Test
-    @SetSystemProperty(key = "kiwi.elk.host", value = "localhost")
-    void shouldFail_WhenPortIsMissing() {
-        assertThatThrownBy(this::tryBuildFactory)
-                .isExactlyInstanceOf(IllegalStateException.class)
-                .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
-                        " Host resolution: %s, Port resolution: %s",
-                        ResolvedBy.SYSTEM_PROPERTY.name(), ResolvedBy.NONE.name());
-    }
-
-    private void tryBuildFactory() {
-        var factory = new ElkAppenderFactory();
-        factory.build(loggerContext,
-                    APP_NAME,
-                    null,
-                    filterFactory,
-                    appenderFactory);
-    }
-
     @Nested
-    @SetSystemProperty(key = "kiwi.elk.host", value = "localhost")
-    @SetSystemProperty(key = "kiwi.elk.port", value = "9090")
-    class UseUdp {
+    class BuildAppenderWithMissingData {
+
         @Test
-        void shouldCreateNewUdpAppender() {
-            var factory = new ElkAppenderFactory();
-            factory.setUseUdp(true);
-
-            var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
-                    APP_NAME,
-                    null,
-                    filterFactory,
-                    appenderFactory);
-
-            assertThat(appender.getAppender("elk")).isInstanceOf(LogstashUdpSocketAppender.class);
+        void shouldFail_WhenHostAndPortAreMissing() {
+            assertThatThrownBy(this::tryBuildFactory)
+                    .isExactlyInstanceOf(IllegalStateException.class)
+                    .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
+                            " Host resolution: %s, Port resolution: %s",
+                            ResolvedBy.NONE.name(), ResolvedBy.NONE.name());
         }
 
         @Test
-        void shouldCreateNewUdpAppender_WhenCustomFieldsAreProvided() {
-            var factory = new ElkAppenderFactory();
-            factory.setUseUdp(true);
-            factory.setCustomFields(Map.of("test", "@test"));
-
-            var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
-                    APP_NAME,
-                    null,
-                    filterFactory,
-                    appenderFactory);
-
-            var elkAppender = (LogstashUdpSocketAppender) appender.getAppender("elk");
-            var elkLayout = (LogstashLayout) elkAppender.getLayout();
-            assertThat(elkLayout.getCustomFields()).contains("\"test\":\"@test\"");
+        @SetSystemProperty(key = "kiwi.elk.port", value = "9090")
+        void shouldFail_WhenHostIsMissing() {
+            assertThatThrownBy(this::tryBuildFactory)
+                    .isExactlyInstanceOf(IllegalStateException.class)
+                    .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
+                            " Host resolution: %s, Port resolution: %s",
+                            ResolvedBy.NONE.name(), ResolvedBy.SYSTEM_PROPERTY.name());
         }
 
         @Test
-        @SetSystemProperty(key = "kiwi.elk.customFields", value = "{\"test\":\"@test\"}")
-        void shouldCreateNewUdpAppender_WhenCustomFieldsAreProvidedByProvider() {
-            var factory = new ElkAppenderFactory();
-            factory.setUseUdp(true);
-
-            var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
-                    APP_NAME,
-                    null,
-                    filterFactory,
-                    appenderFactory);
-
-            var elkAppender = (LogstashUdpSocketAppender) appender.getAppender("elk");
-            var elkLayout = (LogstashLayout) elkAppender.getLayout();
-            assertThat(elkLayout.getCustomFields()).contains("\"test\":\"@test\"");
+        @SetSystemProperty(key = "kiwi.elk.host", value = "localhost")
+        void shouldFail_WhenPortIsMissing() {
+            assertThatThrownBy(this::tryBuildFactory)
+                    .isExactlyInstanceOf(IllegalStateException.class)
+                    .hasMessage("Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
+                            " Host resolution: %s, Port resolution: %s",
+                            ResolvedBy.SYSTEM_PROPERTY.name(), ResolvedBy.NONE.name());
         }
 
-        @Test
-        void shouldCreateNewUdpAppender_WhenFieldNamesAreProvided() {
+        private void tryBuildFactory() {
             var factory = new ElkAppenderFactory();
-            factory.setUseUdp(true);
-            factory.setFieldNames(Map.of("timestamp", "123456"));
-
-            var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
+            factory.build(loggerContext,
                     APP_NAME,
                     null,
                     filterFactory,
                     appenderFactory);
-
-            var elkAppender = (LogstashUdpSocketAppender) appender.getAppender("elk");
-            var elkLayout = (LogstashLayout) elkAppender.getLayout();
-            assertThat(elkLayout.getFieldNames().getTimestamp()).isEqualTo("123456");
         }
     }
 
     @Nested
-    @SetSystemProperty(key = "kiwi.elk.host", value = "localhost")
-    @SetSystemProperty(key = "kiwi.elk.port", value = "9090")
-    class UseTcp {
+    class BuildAppender {
 
-        @Test
-        void shouldCreateNewTcpAppender() {
-            var factory = new ElkAppenderFactory();
+        @RegisterExtension
+        static final LogstashContainerExtension LOGSTASH =
+                new LogstashContainerExtension(LogstashContainerType.SIMULATED);
 
-            var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
-                    APP_NAME,
-                    null,
-                    filterFactory,
-                    appenderFactory);
+        @Nested
+        class UsingUdp {
+            
+            @Test
+            void shouldCreateNewUdpAppender() {
+                var factory = new ElkAppenderFactory();
+                factory.setUseUdp(true);
 
-            assertThat(appender.getAppender("elk")).isInstanceOf(LogstashTcpSocketAppender.class);
+                var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
+                        APP_NAME,
+                        null,
+                        filterFactory,
+                        appenderFactory);
+
+                assertThat(appender.getAppender("elk")).isInstanceOf(LogstashUdpSocketAppender.class);
+            }
+
+            @Test
+            void shouldCreateNewUdpAppender_WhenCustomFieldsAreProvided() {
+                var factory = new ElkAppenderFactory();
+                factory.setUseUdp(true);
+                factory.setCustomFields(Map.of("test", "@test"));
+
+                var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
+                        APP_NAME,
+                        null,
+                        filterFactory,
+                        appenderFactory);
+
+                var elkAppender = (LogstashUdpSocketAppender) appender.getAppender("elk");
+                var elkLayout = (LogstashLayout) elkAppender.getLayout();
+                assertThat(elkLayout.getCustomFields()).contains("\"test\":\"@test\"");
+            }
+
+            @Test
+            @SetSystemProperty(key = "kiwi.elk.customFields", value = "{\"test\":\"@test\"}")
+            void shouldCreateNewUdpAppender_WhenCustomFieldsAreProvidedByProvider() {
+                var factory = new ElkAppenderFactory();
+                factory.setUseUdp(true);
+
+                var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
+                        APP_NAME,
+                        null,
+                        filterFactory,
+                        appenderFactory);
+
+                var elkAppender = (LogstashUdpSocketAppender) appender.getAppender("elk");
+                var elkLayout = (LogstashLayout) elkAppender.getLayout();
+                assertThat(elkLayout.getCustomFields()).contains("\"test\":\"@test\"");
+            }
+
+            @Test
+            void shouldCreateNewUdpAppender_WhenFieldNamesAreProvided() {
+                var factory = new ElkAppenderFactory();
+                factory.setUseUdp(true);
+                factory.setFieldNames(Map.of("timestamp", "123456"));
+
+                var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
+                        APP_NAME,
+                        null,
+                        filterFactory,
+                        appenderFactory);
+
+                var elkAppender = (LogstashUdpSocketAppender) appender.getAppender("elk");
+                var elkLayout = (LogstashLayout) elkAppender.getLayout();
+                assertThat(elkLayout.getFieldNames().getTimestamp()).isEqualTo("123456");
+            }
         }
 
-        @Test
-        void shouldCreateNewTcpAppender_WhenCustomFieldsAreProvided() {
-            var factory = new ElkAppenderFactory();
-            factory.setCustomFields(Map.of("test", "@test"));
+        @Nested
+        class UsingTcp {
 
-            var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
-                    APP_NAME,
-                    null,
-                    filterFactory,
-                    appenderFactory);
+            @Test
+            void shouldCreateNewTcpAppender() {
+                var factory = new ElkAppenderFactory();
 
-            var elkAppender = (LogstashTcpSocketAppender) appender.getAppender("elk");
-            var elkEncoder = (LogstashEncoder) elkAppender.getEncoder();
-            assertThat(elkEncoder.getCustomFields()).contains("\"test\":\"@test\"");
-        }
+                var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
+                        APP_NAME,
+                        null,
+                        filterFactory,
+                        appenderFactory);
 
-        @Test
-        void shouldCreateNewTcpAppender_WhenFieldNamesAreProvided() {
-            var factory = new ElkAppenderFactory();
-            factory.setFieldNames(Map.of("timestamp", "123456"));
+                assertThat(appender.getAppender("elk")).isInstanceOf(LogstashTcpSocketAppender.class);
+            }
 
-            var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
-                    APP_NAME,
-                    null,
-                    filterFactory,
-                    appenderFactory);
+            @Test
+            void shouldCreateNewTcpAppender_WhenCustomFieldsAreProvided() {
+                var factory = new ElkAppenderFactory();
+                factory.setCustomFields(Map.of("test", "@test"));
 
-            var elkAppender = (LogstashTcpSocketAppender) appender.getAppender("elk");
-            var elkEncoder = (LogstashEncoder) elkAppender.getEncoder();
-            assertThat(elkEncoder.getFieldNames().getTimestamp()).isEqualTo("123456");
+                var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
+                        APP_NAME,
+                        null,
+                        filterFactory,
+                        appenderFactory);
+
+                var elkAppender = (LogstashTcpSocketAppender) appender.getAppender("elk");
+                var elkEncoder = (LogstashEncoder) elkAppender.getEncoder();
+                assertThat(elkEncoder.getCustomFields()).contains("\"test\":\"@test\"");
+            }
+
+            @Test
+            void shouldCreateNewTcpAppender_WhenFieldNamesAreProvided() {
+                var factory = new ElkAppenderFactory();
+                factory.setFieldNames(Map.of("timestamp", "123456"));
+
+                var appender = (AsyncAppenderBase<ILoggingEvent>) factory.build(loggerContext,
+                        APP_NAME,
+                        null,
+                        filterFactory,
+                        appenderFactory);
+
+                var elkAppender = (LogstashTcpSocketAppender) appender.getAppender("elk");
+                var elkEncoder = (LogstashEncoder) elkAppender.getEncoder();
+                assertThat(elkEncoder.getFieldNames().getTimestamp()).isEqualTo("123456");
+            }
         }
     }
-
 }
