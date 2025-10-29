@@ -1,5 +1,7 @@
 package org.kiwiproject.elk;
 
+import static java.util.Objects.nonNull;
+
 import com.codahale.metrics.health.HealthCheck;
 import io.dropwizard.core.Application;
 import io.dropwizard.core.Configuration;
@@ -49,8 +51,10 @@ public class DropwizardTestAppExtension implements BeforeAllCallback, AfterAllCa
 
     @Override
     public void afterAll(@NonNull ExtensionContext context) {
-        LOG.info("Stopping Dropwizard app");
-        app.afterAll(context);
+        if (nonNull(app)) {
+            LOG.info("Stopping Dropwizard app");
+            app.afterAll(context);
+        }
 
         LogbackTestHelpers.resetLogback();
         LOG.info("Stopped Dropwizard app, and reset Logback configuration");
