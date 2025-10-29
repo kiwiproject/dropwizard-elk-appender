@@ -27,10 +27,11 @@ import java.time.Duration;
 @Slf4j
 public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCallback {
 
-    private static final DockerImageName LOGSTASH_IMAGE = DockerImageName
-            .parse("docker.elastic.co/logstash/logstash:9.2.0");
+    private static final DockerImageName LOGSTASH_IMAGE = 
+            DockerImageName.parse("docker.elastic.co/logstash/logstash:9.2.0");
 
-    private static final DockerImageName ALPINE_IMAGE_NAME = DockerImageName.parse("alpine:latest");
+    private static final DockerImageName NETCAT_IMAGE_NAME =
+            DockerImageName.parse("toolbelt/netcat:latest");
 
     /**
      * The type of Logstash container.
@@ -100,8 +101,9 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
 
     @SuppressWarnings("resource")
     private static GenericContainer<?> newSimulatedLogstashContainer() {
-        return new GenericContainer<>(ALPINE_IMAGE_NAME)
-                .withCommand("sh", "-c", "apk add -q --no-cache netcat-openbsd && nc -lkp 5044 > /tmp/logs.txt")
+        return new GenericContainer<>(NETCAT_IMAGE_NAME)
+                .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint("/bin/sh"))
+                .withCommand("-c", "nc -lkp 5044 > /tmp/logs.txt")
                 .withExposedPorts(5044)
                 .waitingFor(Wait.forListeningPort())
                 .withStartupTimeout(Duration.ofSeconds(30));
