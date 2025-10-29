@@ -31,7 +31,7 @@
         <dropwizard-config-providers.version>2.3.10</dropwizard-config-providers.version>
         <kiwi.version>4.14.0</kiwi.version>
         <kiwi-test.version>3.12.1</kiwi-test.version>
-        <kiwi-bom.verson>2.2.0</kiwi-bom.verson>
+        <kiwi-bom.version>2.2.0</kiwi-bom.version>
 
         <!-- Sonar Properties -->
         <sonar.projectKey>kiwiproject_dropwizard-elk-appender</sonar.projectKey>
@@ -45,7 +45,7 @@
             <dependency>
                 <groupId>org.kiwiproject</groupId>
                 <artifactId>kiwi-bom</artifactId>
-                <version>${kiwi-bom.verson}</version>
+                <version>${kiwi-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
