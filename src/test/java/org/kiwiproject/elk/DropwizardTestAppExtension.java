@@ -9,6 +9,7 @@ import io.dropwizard.testing.junit5.DropwizardAppExtension;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -37,7 +38,7 @@ public class DropwizardTestAppExtension implements BeforeAllCallback, AfterAllCa
     private DropwizardAppExtension<TestAppConfiguration> app;
 
     @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
+    public void beforeAll(@NonNull ExtensionContext context) throws Exception {
         app = new DropwizardAppExtension<>(
                 TestApp.class,
                 ResourceHelpers.resourceFilePath("elk-integration-test-config.yml"));
@@ -47,7 +48,7 @@ public class DropwizardTestAppExtension implements BeforeAllCallback, AfterAllCa
     }
 
     @Override
-    public void afterAll(ExtensionContext context) throws Exception {
+    public void afterAll(@NonNull ExtensionContext context) {
         LOG.info("Stopping Dropwizard app");
         app.afterAll(context);
 

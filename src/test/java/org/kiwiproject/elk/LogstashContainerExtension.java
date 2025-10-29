@@ -3,6 +3,7 @@ package org.kiwiproject.elk;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -68,7 +69,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
     }
 
     @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
+    public void beforeAll(@NonNull ExtensionContext context) {
         container = switch (containerType) {
             case REAL -> newLogstashContainer();
             case SIMULATED -> newSimulatedLogstashContainer();
@@ -115,7 +116,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
     }
 
     @Override
-    public void afterAll(ExtensionContext context) throws Exception {
+    public void afterAll(@NonNull ExtensionContext context) {
         System.clearProperty("kiwi.elk.host");
         System.clearProperty("kiwi.elk.port");
 
