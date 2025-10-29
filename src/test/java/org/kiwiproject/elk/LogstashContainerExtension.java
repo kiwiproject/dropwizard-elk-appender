@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.kiwiproject.base.UncheckedInterruptedException;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -90,18 +91,9 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
     @SuppressWarnings("resource")
     private static GenericContainer<?> newLogstashContainer() {
         return new GenericContainer<>(LOGSTASH_IMAGE)
+                .withClasspathResourceMapping(
+                    "logstash.conf", "/usr/share/logstash/pipeline/logstash.conf", BindMode.READ_ONLY)
                 .withExposedPorts(5044)
-                .withEnv("config.string", """
-                        input {
-                            tcp {
-                                port => 5044
-                                codec => json_lines
-                            }
-                        }
-                        output {
-                            stdout { codec => json_lines }
-                        }
-                        """)
                 .waitingFor(Wait.forListeningPort())
                 .withStartupTimeout(Duration.ofSeconds(60));
     }
