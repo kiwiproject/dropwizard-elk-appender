@@ -20,4 +20,9 @@ class ElkAppenderFullIntegrationTest extends AbstractElkAppenderIntegrationTest 
     protected LogstashContainerExtension logstash() {
         return LOGSTASH;
     }
+
+    @Override
+    protected DropwizardTestAppExtension dwApp() {
+        return DW_APP;
+    }
 }

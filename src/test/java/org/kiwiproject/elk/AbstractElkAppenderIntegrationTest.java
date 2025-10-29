@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.awaitility.Durations;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
 
@@ -17,8 +16,9 @@ import java.time.Instant;
  * Base class that provides tests for sending logs to Logstash.
  * <p>
  * Implementing classes must register their own {@link LogstashContainerExtension}
- * and expose it from the {@link #logstash()} method. Since implementations
- * must use an extension declared as static, it cannot be done here.
+ * and {@link DropwizardTestAppExtension} expose them from the {@link #logstash()}
+ * and {@link #dwApp()} methods, respectively. Since implementations must use extensions
+ * declared as static, it cannot be done here.
  */
 abstract class AbstractElkAppenderIntegrationTest {
 
@@ -27,9 +27,14 @@ abstract class AbstractElkAppenderIntegrationTest {
      */
     protected abstract LogstashContainerExtension logstash();
 
+    /**
+     * Implementing classes must override this to provide the DropwizardTestAppExtension.
+     */
+    protected abstract DropwizardTestAppExtension dwApp();
+
     @Test
     void shouldSendLog() {
-        var logger = LoggerFactory.getLogger("integration-test");
+        var logger = dwApp().getIntegrationTestLogger();
         logger.info("¡Hola mensaje de Dropwizard!");
 
         // Verify we saw the message
@@ -39,7 +44,7 @@ abstract class AbstractElkAppenderIntegrationTest {
 
     @Test
     void shouldSendLogs() {
-        var logger = LoggerFactory.getLogger("integration-test");
+        var logger = dwApp().getIntegrationTestLogger();
         logger.debug("Debugging message from Dropwizard!");
         logger.info("Hello message from Dropwizard!");
         logger.warn("Warning message from Dropwizard!");
@@ -69,7 +74,7 @@ abstract class AbstractElkAppenderIntegrationTest {
 
     @Test
     void shouldGetLogsInExpectedFormat() {
-        var logger = LoggerFactory.getLogger("integration-test");
+        var logger = dwApp().getIntegrationTestLogger();
         logger.info("Hallo Nachricht von Dropwizard!");
 
          // Verify we saw the message
