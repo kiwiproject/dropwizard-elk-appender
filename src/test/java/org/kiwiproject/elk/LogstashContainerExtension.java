@@ -1,5 +1,7 @@
 package org.kiwiproject.elk;
 
+import static java.util.Objects.nonNull;
+
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -114,8 +116,10 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
         System.clearProperty("kiwi.elk.host");
         System.clearProperty("kiwi.elk.port");
 
-        LOG.warn("Stopping Logstash");
-        container.stop();
+        if (nonNull(container)) {
+            LOG.warn("Stopping Logstash");
+            container.stop();
+        }
     }
 
     /**
