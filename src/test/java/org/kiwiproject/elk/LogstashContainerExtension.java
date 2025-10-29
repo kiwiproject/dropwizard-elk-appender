@@ -105,7 +105,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
     private static GenericContainer<?> newSimulatedLogstashContainer() {
         return new GenericContainer<>(NETCAT_IMAGE_NAME)
                 .withCreateContainerCmdModifier(cmd -> cmd.withEntrypoint("/bin/sh"))
-                .withCommand("-c", "nc -lkp 5044 > /tmp/logs.txt")
+                .withCommand("-c", "nc -l -k -p 5044 > /tmp/logs.txt")
                 .withExposedPorts(5044)
                 .waitingFor(Wait.forListeningPort())
                 .withStartupTimeout(Duration.ofSeconds(30));
