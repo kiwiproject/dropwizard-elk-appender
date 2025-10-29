@@ -112,7 +112,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
                 .withCommand("sh", "-c", "apk add -q --no-cache netcat-openbsd && nc -lkp 5044 > /tmp/logs.txt")
                 .withExposedPorts(5044)
                 .waitingFor(Wait.forListeningPort())
-                .withStartupTimeout(Duration.ofSeconds(10));
+                .withStartupTimeout(Duration.ofSeconds(30));
     }
 
     @Override
