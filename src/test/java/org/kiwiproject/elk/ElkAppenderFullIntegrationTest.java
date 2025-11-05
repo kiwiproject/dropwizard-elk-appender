@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@EnabledIfSystemProperty(named = "fullIntegrationTests", matches = "true")
+@EnabledIfSystemProperty(named = "fullIntegrationTests", matches = ".*")
 @DisplayName("ElkAppender TCP (using Logstash in container)")
 @Slf4j
 class ElkAppenderFullIntegrationTest extends AbstractElkAppenderIntegrationTest {
