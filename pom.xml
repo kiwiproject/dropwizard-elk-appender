@@ -30,7 +30,8 @@
         <!-- Versions for required dependencies -->
         <dropwizard-config-providers.version>2.3.10</dropwizard-config-providers.version>
         <kiwi.version>4.14.0</kiwi.version>
-        <kiwi-bom.verson>2.2.0</kiwi-bom.verson>
+        <kiwi-test.version>3.12.1</kiwi-test.version>
+        <kiwi-bom.version>2.2.0</kiwi-bom.version>
 
         <!-- Sonar Properties -->
         <sonar.projectKey>kiwiproject_dropwizard-elk-appender</sonar.projectKey>
@@ -44,11 +45,11 @@
             <dependency>
                 <groupId>org.kiwiproject</groupId>
                 <artifactId>kiwi-bom</artifactId>
-                <version>${kiwi-bom.verson}</version>
+                <version>${kiwi-bom.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            
+
             <dependency>
                 <groupId>org.kiwiproject</groupId>
                 <artifactId>kiwi</artifactId>
@@ -90,6 +91,33 @@
         <dependency>
             <groupId>org.kiwiproject</groupId>
             <artifactId>kiwi</artifactId>
+        </dependency>
+
+        <!-- test dependencies -->
+
+        <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-testing</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kiwiproject</groupId>
+            <artifactId>kiwi-test</artifactId>
+            <version>${kiwi-test.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
