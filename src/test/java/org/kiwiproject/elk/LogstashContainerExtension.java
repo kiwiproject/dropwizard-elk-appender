@@ -24,6 +24,7 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.time.Duration;
 import java.util.Map;
 
@@ -195,8 +196,8 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new UncheckedInterruptedException(e);
-        } catch (UnsupportedOperationException | IOException e) {
-           throw new RuntimeException(e);
+        } catch (IOException e) {
+           throw new UncheckedIOException(e);
         }
     }
 }
