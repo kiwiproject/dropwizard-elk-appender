@@ -1,13 +1,9 @@
 package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
-
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.fieldnames.LogstashFieldNames;
-import org.awaitility.Durations;
 import org.junit.jupiter.api.Test;
 import org.kiwiproject.collect.KiwiMaps;
 
@@ -51,8 +47,7 @@ abstract class AbstractElkAppenderIntegrationTest {
         logger.info(spanishHello);
 
         // Verify we saw the message
-        await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains(spanishHello));
+        logstash().awaitLogContains(spanishHello);
     }
 
     @Test
@@ -70,12 +65,7 @@ abstract class AbstractElkAppenderIntegrationTest {
         logger.error(errorHello);
 
         // Verify we saw all the expected messages
-        await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs())
-                        .contains(debugHello)
-                        .contains(infoHello)
-                        .contains(warnHello)
-                        .contains(errorHello));
+        logstash().awaitLogContains(debugHello, infoHello, warnHello, errorHello);
     }
 
     @Test
@@ -85,15 +75,10 @@ abstract class AbstractElkAppenderIntegrationTest {
         logger.info(germanHello);
 
         // Verify we saw the message
-        await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains(germanHello));
+        logstash().awaitLogContains(germanHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(germanHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(germanHello);
 
         var fieldNames = fieldNames();
 

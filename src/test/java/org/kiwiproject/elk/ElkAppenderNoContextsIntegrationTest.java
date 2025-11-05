@@ -1,12 +1,8 @@
 package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
-
 import ch.qos.logback.classic.LoggerContext;
-import org.awaitility.Durations;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -63,15 +59,10 @@ class ElkAppenderNoContextsIntegrationTest extends AbstractElkAppenderIntegratio
         logger.info(portugueseHello);
 
         // Verify we saw the message
-        await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains(portugueseHello));
+        logstash().awaitLogContains(portugueseHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(portugueseHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(portugueseHello);
 
         assertAll(
                 () -> assertThat(helloLog).doesNotContainKey("organization"),
@@ -92,15 +83,10 @@ class ElkAppenderNoContextsIntegrationTest extends AbstractElkAppenderIntegratio
         logger.info(swedishHello);
 
         // Verify we saw the message
-        await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains(swedishHello));
+        logstash().awaitLogContains(swedishHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(swedishHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(swedishHello);
 
         assertAll(
                 () -> assertThat(helloLog).doesNotContainKey("traceId"),

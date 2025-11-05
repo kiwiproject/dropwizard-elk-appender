@@ -1,12 +1,8 @@
 package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
-
 import ch.qos.logback.classic.LoggerContext;
-import org.awaitility.Durations;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -63,15 +59,10 @@ class ElkAppenderContextsIntegrationTest extends AbstractElkAppenderIntegrationT
         logger.info(dutchHello);
 
         // Verify we saw the message
-        await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains(dutchHello));
+        logstash().awaitLogContains(dutchHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(dutchHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(dutchHello);
 
         assertAll(
                 () -> assertThat(helloLog).containsEntry("organization", "kiwiproject"),
@@ -92,15 +83,10 @@ class ElkAppenderContextsIntegrationTest extends AbstractElkAppenderIntegrationT
         logger.info(frenchHello);
 
         // Verify we saw the message
-        await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains(frenchHello));
+        logstash().awaitLogContains(frenchHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(frenchHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(frenchHello);
 
         assertAll(
                 () -> assertThat(helloLog).containsEntry("traceId", traceId),
