@@ -5,12 +5,14 @@ import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.extern.slf4j.Slf4j;
+import net.logstash.logback.fieldnames.LogstashFieldNames;
 import org.awaitility.Durations;
 import org.junit.jupiter.api.Test;
+import org.kiwiproject.collect.KiwiMaps;
 
 import java.time.Instant;
+import java.util.Map;
 
 /**
  * Base class that provides tests for sending logs to Logstash.
@@ -20,6 +22,7 @@ import java.time.Instant;
  * and {@link #dwApp()} methods, respectively. Since implementations must use extensions
  * declared as static, it cannot be done here.
  */
+@Slf4j
 abstract class AbstractElkAppenderIntegrationTest {
 
     /**
@@ -31,6 +34,15 @@ abstract class AbstractElkAppenderIntegrationTest {
      * Implementing classes must override this to provide the DropwizardTestAppExtension.
      */
     protected abstract DropwizardTestAppExtension dwApp();
+
+    /**
+     * Implementating classes may override to provide different field name mappings.
+     * 
+     * @see ElkAppenderFactory#setFieldNames(Map)
+     */
+    protected LogstashFieldNames fieldNames() {
+        return new LogstashFieldNames();
+    }
 
     @Test
     void shouldSendLog() {
@@ -59,41 +71,32 @@ abstract class AbstractElkAppenderIntegrationTest {
                         .contains("Error message from Dropwizard!"));
     }
 
-    /**
-     * Record that represents the most basic information expected in a Logstash record.
-     */
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    record LogstashLogRecord(
-            @JsonProperty("@timestamp") String timestamp,
-            @JsonProperty("message") String message,
-            @JsonProperty("logger_name") String loggerName,
-            @JsonProperty("level") String level,
-            @JsonProperty("@version") String version,
-            @JsonProperty("thread_name") String threadName) {
-    }
-
     @Test
     void shouldGetLogsInExpectedFormat() {
         var logger = dwApp().getIntegrationTestLogger();
         logger.info("Hallo Nachricht von Dropwizard!");
 
-         // Verify we saw the message
+        // Verify we saw the message
         await().atMost(Durations.TEN_SECONDS)
                 .untilAsserted(() -> assertThat(logstash().logs()).contains("Hallo Nachricht von Dropwizard!"));
 
         // Verify details of the log message
         var helloLog = logstash().logs().lines()
                 .filter(line -> line.contains("Hallo Nachricht von Dropwizard!"))
-                .map(line -> JSON_HELPER.toObject(line, LogstashLogRecord.class))
+                .map(JSON_HELPER::toMap)
                 .findFirst()
                 .orElseThrow();
 
+        var fieldNames = fieldNames();
+
         assertAll(
-                () -> assertThat(helloLog.timestamp()).isNotBlank(),
-                () -> assertThat(Instant.parse(helloLog.timestamp())).isBefore(Instant.now()),
-                () -> assertThat(helloLog.loggerName()).isEqualTo("integration-test"),
-                () -> assertThat(helloLog.level()).isEqualTo("INFO"),
-                () -> assertThat(helloLog.version()).isNotBlank(),
-                () -> assertThat(helloLog.threadName()).isNotBlank());
+                () -> assertThat(KiwiMaps.getAsStringOrNull(helloLog, fieldNames.getTimestamp())).isNotBlank(),
+                () -> assertThat(Instant.parse(KiwiMaps.getAsStringOrNull(helloLog, fieldNames.getTimestamp()))).isBefore(Instant.now()),
+                () -> assertThat(KiwiMaps.getAsStringOrNull(helloLog, fieldNames.getLogger())).isEqualTo("integration-test"),
+                () -> assertThat(KiwiMaps.getAsStringOrNull(helloLog, fieldNames.getLevel())).isEqualTo("INFO"),
+                () -> assertThat(KiwiMaps.getAsStringOrNull(helloLog, fieldNames.getVersion())).isNotBlank(),
+                () -> assertThat(KiwiMaps.getAsStringOrNull(helloLog, fieldNames.getThread())).isNotBlank()
+        );
+
     }
 }

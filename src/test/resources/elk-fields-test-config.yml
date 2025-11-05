@@ -1,0 +1,17 @@
+---
+
+logging:
+  level: INFO
+  loggers:
+    integration-test: DEBUG
+    org.kiwiproject.elk: DEBUG
+  appenders:
+    - type: console
+    - type: elk
+      fieldNames:
+        timestamp: timestampEpochMillis
+        version: ver
+        message: logMessage
+        logger: logName
+        thread: threadName
+        level: logLevel

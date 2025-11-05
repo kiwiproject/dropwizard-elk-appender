@@ -1,7 +1,11 @@
 package org.kiwiproject.elk;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
+import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +22,7 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.Map;
 
 /**
  * Creates a Logstash container for use by integration tests. The container is started before
@@ -57,19 +62,23 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
 
     private final LogstashContainerType containerType;
 
+    private final Map<String, String> customFields;
+
     /**
      * Create a container that uses a real Logtash container.
      */
     public LogstashContainerExtension() {
-        this(LogstashContainerType.REAL);
+        this(LogstashContainerType.REAL, Map.of());
     }
 
     /**
      * Create a container that uses the given container type to create a real
      * or simulated Logstash container.
      */
-    public LogstashContainerExtension(LogstashContainerType containerType) {
-        this.containerType = containerType;
+    @Builder
+    public LogstashContainerExtension(LogstashContainerType containerType, Map<String, String> customFields) {
+        this.containerType = isNull(containerType) ? LogstashContainerType.REAL : containerType;
+        this.customFields = isNull(customFields) ? Map.of() : customFields;
     }
 
     @Override
@@ -85,10 +94,13 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
          // Set properties for ElkLoggerConfigProvider
         var host = container.getHost();
         var port = container.getMappedPort(5044).toString();
-        LOG.info("Container host {} started with port {} mapped to container 5044", host, port);
+        LOG.info("Container host {} started with port 5044 mapped to external port {}", host, port);
         
         System.setProperty("kiwi.elk.host", host);
-        System.setProperty("kiwi.elk.port", port);
+        System.setProperty("kiwi.elk.port", port);    
+        if (isNotNullOrEmpty(customFields)) {
+            System.setProperty("kiwi.elk.customFields", JSON_HELPER.toJson(customFields));        
+        }
     }
 
     @SuppressWarnings("resource")

@@ -85,8 +85,9 @@ class ElkAppenderFactoryTest {
     class BuildAppender {
 
         @RegisterExtension
-        static final LogstashContainerExtension LOGSTASH =
-                new LogstashContainerExtension(LogstashContainerType.SIMULATED);
+        static final LogstashContainerExtension LOGSTASH = LogstashContainerExtension.builder()
+                .containerType(LogstashContainerType.SIMULATED)
+                .build();
 
         @Nested
         class UsingUdp {
