@@ -17,7 +17,7 @@ class ElkAppenderFieldNamesIntegrationTest extends AbstractElkAppenderIntegratio
 
     @RegisterExtension
     static final DropwizardTestAppExtension DW_APP =
-            new DropwizardTestAppExtension("elk-fields-test-config.yml");
+            new DropwizardTestAppExtension("elk-field-names-test-config.yml");
 
     @Override
     protected LogstashContainerExtension logstash() {
