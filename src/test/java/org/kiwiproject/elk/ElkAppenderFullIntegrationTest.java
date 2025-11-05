@@ -2,10 +2,9 @@ package org.kiwiproject.elk;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-@EnabledIfSystemProperty(named = "fullIntegrationTests", matches = ".*")
+@EnabledForFullIntegrationTests
 @DisplayName("ElkAppender TCP (using Logstash in container)")
 @Slf4j
 class ElkAppenderFullIntegrationTest extends AbstractElkAppenderIntegrationTest {
