@@ -47,42 +47,50 @@ abstract class AbstractElkAppenderIntegrationTest {
     @Test
     void shouldSendLog() {
         var logger = dwApp().getIntegrationTestLogger();
-        logger.info("¡Hola mensaje de Dropwizard!");
+        var spanishHello = "¡Hola mensaje de Dropwizard!";
+        logger.info(spanishHello);
 
         // Verify we saw the message
         await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains("¡Hola mensaje de Dropwizard!"));
+                .untilAsserted(() -> assertThat(logstash().logs()).contains(spanishHello));
     }
 
     @Test
     void shouldSendLogs() {
         var logger = dwApp().getIntegrationTestLogger();
-        logger.debug("Debugging message from Dropwizard!");
-        logger.info("Hello message from Dropwizard!");
-        logger.warn("Warning message from Dropwizard!");
-        logger.error("Error message from Dropwizard!");
+        
+        var debugHello = "Debugging message from Dropwizard!";
+        var infoHello = "Hello message from Dropwizard!";
+        var warnHello = "Warning message from Dropwizard!";
+        var errorHello = "Error message from Dropwizard!";
+        
+        logger.debug(debugHello);
+        logger.info(infoHello);
+        logger.warn(warnHello);
+        logger.error(errorHello);
 
         // Verify we saw all the expected messages
         await().atMost(Durations.TEN_SECONDS)
                 .untilAsserted(() -> assertThat(logstash().logs())
-                        .contains("Debugging message from Dropwizard!")
-                        .contains("Hello message from Dropwizard!")
-                        .contains("Warning message from Dropwizard!")
-                        .contains("Error message from Dropwizard!"));
+                        .contains(debugHello)
+                        .contains(infoHello)
+                        .contains(warnHello)
+                        .contains(errorHello));
     }
 
     @Test
     void shouldGetLogsInExpectedFormat() {
         var logger = dwApp().getIntegrationTestLogger();
-        logger.info("Hallo Nachricht von Dropwizard!");
+        var germanHello = "Hallo Nachricht von Dropwizard!";
+        logger.info(germanHello);
 
         // Verify we saw the message
         await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains("Hallo Nachricht von Dropwizard!"));
+                .untilAsserted(() -> assertThat(logstash().logs()).contains(germanHello));
 
         // Verify details of the log message
         var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains("Hallo Nachricht von Dropwizard!"))
+                .filter(line -> line.contains(germanHello))
                 .map(JSON_HELPER::toMap)
                 .findFirst()
                 .orElseThrow();
@@ -97,6 +105,5 @@ abstract class AbstractElkAppenderIntegrationTest {
                 () -> assertThat(KiwiMaps.getAsStringOrNull(helloLog, fieldNames.getVersion())).isNotBlank(),
                 () -> assertThat(KiwiMaps.getAsStringOrNull(helloLog, fieldNames.getThread())).isNotBlank()
         );
-
     }
 }

@@ -59,15 +59,16 @@ class ElkAppenderNoContextsIntegrationTest extends AbstractElkAppenderIntegratio
     @Test
     void shouldNotIncludeContextValues() {
         var logger = dwApp().getIntegrationTestLogger();
-        logger.info("Hallo van Dropwizard!");
+        var portugueseHello = "Olá do Dropwizard!";
+        logger.info(portugueseHello);
 
         // Verify we saw the message
         await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains("Hallo van Dropwizard!"));
+                .untilAsserted(() -> assertThat(logstash().logs()).contains(portugueseHello));
 
         // Verify details of the log message
         var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains("Hallo van Dropwizard!"))
+                .filter(line -> line.contains(portugueseHello))
                 .map(JSON_HELPER::toMap)
                 .findFirst()
                 .orElseThrow();
@@ -87,15 +88,16 @@ class ElkAppenderNoContextsIntegrationTest extends AbstractElkAppenderIntegratio
         MDC.put("userId", userId);
 
         var logger = dwApp().getIntegrationTestLogger();
-        logger.info("Bonjour de la part de Dropwizard!");
+        var swedishHello = "Hälsningar från Dropwizard";
+        logger.info(swedishHello);
 
         // Verify we saw the message
         await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains("Bonjour de la part de Dropwizard!"));
+                .untilAsserted(() -> assertThat(logstash().logs()).contains(swedishHello));
 
         // Verify details of the log message
         var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains("Bonjour de la part de Dropwizard!"))
+                .filter(line -> line.contains(swedishHello))
                 .map(JSON_HELPER::toMap)
                 .findFirst()
                 .orElseThrow();

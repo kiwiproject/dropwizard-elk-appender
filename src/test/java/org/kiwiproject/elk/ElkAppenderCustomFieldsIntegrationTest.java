@@ -45,15 +45,16 @@ class ElkAppenderCustomFieldsIntegrationTest extends AbstractElkAppenderIntegrat
     @Test
     void shouldHaveCustomFields() {
         var logger = dwApp().getIntegrationTestLogger();
-        logger.info("Ciao da Dropwizard!");
+        var italianHello = "Ciao da Dropwizard!";
+        logger.info(italianHello);
 
         // Verify we saw the message
         await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains("Ciao da Dropwizard!"));
+                .untilAsserted(() -> assertThat(logstash().logs()).contains(italianHello));
 
          // Verify details of the log message
         var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains("Ciao da Dropwizard!"))
+                .filter(line -> line.contains(italianHello))
                 .map(JSON_HELPER::toMap)
                 .findFirst()
                 .orElseThrow();

@@ -37,15 +37,16 @@ class ElkAppenderIntegrationTest extends AbstractElkAppenderIntegrationTest {
     @Test
     void shouldNotIncludeCallerDataByDefault() {
         var logger = dwApp().getIntegrationTestLogger();
-        logger.info("nuqneH dropwizard!");
+        var klingonHello = "nuqneH Dropwizard!";
+        logger.info(klingonHello);
 
         // Verify we saw the message
         await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains("nuqneH dropwizard!"));
+                .untilAsserted(() -> assertThat(logstash().logs()).contains(klingonHello));
 
         // Verify details of the log message
         var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains("nuqneH dropwizard!"))
+                .filter(line -> line.contains(klingonHello))
                 .map(JSON_HELPER::toMap)
                 .findFirst()
                 .orElseThrow();
