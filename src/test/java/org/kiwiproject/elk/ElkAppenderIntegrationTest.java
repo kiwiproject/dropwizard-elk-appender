@@ -1,11 +1,9 @@
 package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
 import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
 
 import lombok.extern.slf4j.Slf4j;
-import org.awaitility.Durations;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -41,8 +39,7 @@ class ElkAppenderIntegrationTest extends AbstractElkAppenderIntegrationTest {
         logger.info(klingonHello);
 
         // Verify we saw the message
-        await().atMost(Durations.TEN_SECONDS)
-                .untilAsserted(() -> assertThat(logstash().logs()).contains(klingonHello));
+        logstash().awaitLogContains(klingonHello);
 
         // Verify details of the log message
         var helloLog = logstash().logs().lines()

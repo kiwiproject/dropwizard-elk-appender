@@ -2,6 +2,8 @@ package org.kiwiproject.elk;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
 import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
 
@@ -9,6 +11,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+import org.awaitility.Durations;
 import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
@@ -144,6 +147,33 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
             case REAL -> container.getLogs();
             case SIMULATED -> execInContainerReturningStdOut("cat", "/tmp/logs.txt");
         };
+    }
+
+     /**
+     * Waits up to the 10 seconds for the given substring to appear in the Logstash logs.
+     */
+    public void awaitLogContains(String... substring) {
+        awaitLogContains(Durations.TEN_SECONDS, substring);
+    }
+
+    /**
+     * Waits up to the provided duration for the given substring to appear in the logs.
+     */
+    public void awaitLogContains(Duration timeout, String... substring) {
+        await().atMost(timeout)
+                .untilAsserted(() -> assertThat(logs()).contains(substring));
+    }
+
+    /**
+     * Finds the first log line that contains the given substring and converts it to a Map.
+     * Throws AssertionError if no matching line is found.
+     */
+    public Map<String, Object> findFirstLogAsMapContaining(String substring) {
+        return logs().lines()
+                .filter(line -> line.contains(substring))
+                .map(JSON_HELPER::toMap)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("No log line containing: " + substring));
     }
 
     /**
