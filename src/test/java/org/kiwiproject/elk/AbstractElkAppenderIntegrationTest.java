@@ -48,7 +48,7 @@ abstract class AbstractElkAppenderIntegrationTest {
         var spanishHello = "¡Hola mensaje de Dropwizard!";
         logger.info(spanishHello);
 
-        // Verify we saw the message TEMPORARY FOR SONAR DEBUGGING...AGAIN
+        // Verify we saw the message
         logstash().awaitLogContains(spanishHello);
     }
 
