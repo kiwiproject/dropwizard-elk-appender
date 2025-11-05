@@ -56,6 +56,9 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
             customFields = elkLoggerConfigProvider.getCustomFields();
         }
 
+        // Tell Dropwizard to include caller data
+        super.setIncludeCallerData(includeCallerData);
+
         var appender = useUdp ? createUdpAppender() : createTcpAppender();
 
         appender.setName("elk");
