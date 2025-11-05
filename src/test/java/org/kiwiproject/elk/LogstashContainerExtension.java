@@ -129,7 +129,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
         System.clearProperty("kiwi.elk.port");
 
         if (nonNull(container)) {
-            LOG.warn("Stopping Logstash");
+            LOG.info("Stopping Logstash");
             container.stop();
         }
     }
