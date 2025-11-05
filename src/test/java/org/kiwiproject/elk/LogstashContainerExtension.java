@@ -127,6 +127,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
     public void afterAll(@NonNull ExtensionContext context) {
         System.clearProperty("kiwi.elk.host");
         System.clearProperty("kiwi.elk.port");
+        System.clearProperty("kiwi.elk.customFields");
 
         if (nonNull(container)) {
             LOG.info("Stopping Logstash");
