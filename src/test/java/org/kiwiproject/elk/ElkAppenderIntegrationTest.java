@@ -7,14 +7,16 @@ import org.kiwiproject.elk.LogstashContainerExtension.LogstashContainerType;
 
 @DisplayName("ElkAppender (using simulated Logstash)")
 @Slf4j
-class ElkAppenderLightweightIntegrationTest extends AbstractElkAppenderIntegrationTest {
+class ElkAppenderIntegrationTest extends AbstractElkAppenderIntegrationTest {
 
     @RegisterExtension
-    static final LogstashContainerExtension LOGSTASH =
-            new LogstashContainerExtension(LogstashContainerType.SIMULATED);
+    static final LogstashContainerExtension LOGSTASH = LogstashContainerExtension.builder()
+            .containerType(LogstashContainerType.SIMULATED)
+            .build();
 
     @RegisterExtension
-    static final DropwizardTestAppExtension DW_APP = new DropwizardTestAppExtension();
+    static final DropwizardTestAppExtension DW_APP =
+            new DropwizardTestAppExtension("elk-integration-test-config.yml");
 
     @Override
     protected LogstashContainerExtension logstash() {

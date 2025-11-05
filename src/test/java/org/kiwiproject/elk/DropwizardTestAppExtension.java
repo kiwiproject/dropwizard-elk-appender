@@ -39,11 +39,17 @@ public class DropwizardTestAppExtension implements BeforeAllCallback, AfterAllCa
 
     private DropwizardAppExtension<TestAppConfiguration> app;
 
+    private final String configFile;
+
+    public DropwizardTestAppExtension(String configFile) {
+        this.configFile = configFile;
+    }
+
     @Override
     public void beforeAll(@NonNull ExtensionContext context) throws Exception {
         app = new DropwizardAppExtension<>(
                 TestApp.class,
-                ResourceHelpers.resourceFilePath("elk-integration-test-config.yml"));
+                ResourceHelpers.resourceFilePath(configFile));
 
         LOG.info("Starting Dropwizard app");
         app.beforeAll(context);
