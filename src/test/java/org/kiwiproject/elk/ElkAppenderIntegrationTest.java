@@ -1,8 +1,6 @@
 package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,11 +40,7 @@ class ElkAppenderIntegrationTest extends AbstractElkAppenderIntegrationTest {
         logstash().awaitLogContains(klingonHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(klingonHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(klingonHello);
 
         System.out.println("helloLog = " + helloLog);
 

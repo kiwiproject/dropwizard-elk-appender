@@ -2,8 +2,6 @@ package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
-
 import ch.qos.logback.classic.LoggerContext;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -64,11 +62,7 @@ class ElkAppenderNoContextsIntegrationTest extends AbstractElkAppenderIntegratio
         logstash().awaitLogContains(portugueseHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(portugueseHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(portugueseHello);
 
         assertAll(
                 () -> assertThat(helloLog).doesNotContainKey("organization"),
@@ -92,11 +86,7 @@ class ElkAppenderNoContextsIntegrationTest extends AbstractElkAppenderIntegratio
         logstash().awaitLogContains(swedishHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(swedishHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(swedishHello);
 
         assertAll(
                 () -> assertThat(helloLog).doesNotContainKey("traceId"),

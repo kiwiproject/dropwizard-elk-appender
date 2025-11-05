@@ -2,8 +2,6 @@ package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
-
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -50,11 +48,7 @@ class ElkAppenderCustomFieldsIntegrationTest extends AbstractElkAppenderIntegrat
         logstash().awaitLogContains(italianHello);
 
          // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(italianHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(italianHello);
 
          assertAll(
                 () -> assertThat(KiwiMaps.getAsStringOrNull(helloLog, "application")).isEqualTo("order-service"),

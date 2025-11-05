@@ -2,8 +2,6 @@ package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
@@ -40,11 +38,7 @@ class ElkAppenderCallerDataIntegrationTest extends AbstractElkAppenderIntegratio
         logstash().awaitLogContains(danishHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(danishHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(danishHello);
 
         assertAll(
                 () -> assertThat(helloLog).containsEntry("caller_class_name", ElkAppenderCallerDataIntegrationTest.class.getName()),

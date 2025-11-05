@@ -4,6 +4,8 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
+import static org.kiwiproject.base.KiwiStrings.f;
+import static org.kiwiproject.collect.KiwiLists.first;
 import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
 import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
 
@@ -26,6 +28,7 @@ import org.testcontainers.utility.DockerImageName;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -166,15 +169,32 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
     }
 
     /**
-     * Finds the first log line that contains the given substring and converts it to a Map.
-     * Throws AssertionError if no matching line is found.
+     * Finds the log line that contains the given substring and converts it to a Map.
+     * Throws AssertionError if no matching line is found, or if more than one matched.
      */
-    public Map<String, Object> findFirstLogAsMapContaining(String substring) {
+    public Map<String, Object> findUniqueLogEntryContaining(String substring) {
+        var entries = findLogEntriesContaining(substring);
+
+        if (entries.isEmpty()) {
+            throw new AssertionError(f("No log line containing '{}'", substring));
+        }
+
+        var count = entries.size();
+        if (count > 1) {
+            throw new AssertionError(f("Expected exactly one log line containing '{}' but found {}", substring, count));
+        }
+
+        return first(entries);
+    }
+
+    /**
+     * Finds the log lines that contain the given substring.
+     */
+    public List<Map<String, Object>> findLogEntriesContaining(String substring) {
         return logs().lines()
                 .filter(line -> line.contains(substring))
                 .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow(() -> new AssertionError("No log line containing: " + substring));
+                .toList();
     }
 
     /**

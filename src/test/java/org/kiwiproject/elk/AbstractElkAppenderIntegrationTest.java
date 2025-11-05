@@ -2,8 +2,6 @@ package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.kiwiproject.test.constants.KiwiTestConstants.JSON_HELPER;
-
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.fieldnames.LogstashFieldNames;
 import org.junit.jupiter.api.Test;
@@ -80,11 +78,7 @@ abstract class AbstractElkAppenderIntegrationTest {
         logstash().awaitLogContains(germanHello);
 
         // Verify details of the log message
-        var helloLog = logstash().logs().lines()
-                .filter(line -> line.contains(germanHello))
-                .map(JSON_HELPER::toMap)
-                .findFirst()
-                .orElseThrow();
+        var helloLog = logstash().findUniqueLogEntryContaining(germanHello);
 
         var fieldNames = fieldNames();
 
