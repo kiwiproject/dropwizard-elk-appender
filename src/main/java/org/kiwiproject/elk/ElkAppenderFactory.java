@@ -109,8 +109,9 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
 
     private static final JsonHelper JSON_HELPER = JsonHelper.newDropwizardJsonHelper();
 
+    // NOTE: includeCallerData is handled by the inherited setter/getter from AbstractAppenderFactory
+    
     private boolean useUdp;
-    @Getter(AccessLevel.PUBLIC) private boolean includeCallerData;  // must be public; getter in superclass is public
     private boolean includeContext;
     private boolean includeMdc;
     private Map<String, String> customFields;
@@ -145,9 +146,6 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
             customFields = elkLoggerConfigProvider.getCustomFields();
         }
 
-        // Tell Dropwizard to include caller data
-        super.setIncludeCallerData(includeCallerData);
-
         var appender = useUdp ? createUdpAppender() : createTcpAppender();
 
         appender.setName("elk");
@@ -161,7 +159,7 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
     @SuppressWarnings("DuplicatedCode")
     private LogstashTcpSocketAppender createTcpAppender() {
         var encoder = new LogstashEncoder();
-        encoder.setIncludeCallerData(includeCallerData);
+        encoder.setIncludeCallerData(isIncludeCallerData());
         encoder.setIncludeMdc(includeMdc);
         encoder.setIncludeContext(includeContext);
 
@@ -183,7 +181,7 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
     @SuppressWarnings("DuplicatedCode")
     private LogstashUdpSocketAppender createUdpAppender() {
         var layout = new LogstashLayout();
-        layout.setIncludeCallerData(includeCallerData);
+        layout.setIncludeCallerData(isIncludeCallerData());
         layout.setIncludeMdc(includeMdc);
         layout.setIncludeContext(includeContext);
 
