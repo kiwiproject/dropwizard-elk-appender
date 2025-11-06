@@ -72,7 +72,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
     private final Map<String, String> customFields;
 
     /**
-     * Create a container that uses a real Logtash container.
+     * Create a container that uses a real Logstash container.
      */
     public LogstashContainerExtension() {
         this(LogstashContainerType.REAL, Map.of());
@@ -154,7 +154,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
     }
 
      /**
-     * Waits up to the 10 seconds for the given substring to appear in the Logstash logs.
+      * Waits up to 10 seconds for the given substring to appear in the Logstash logs.
      */
     public void awaitLogContains(String... substring) {
         awaitLogContains(Durations.TEN_SECONDS, substring);

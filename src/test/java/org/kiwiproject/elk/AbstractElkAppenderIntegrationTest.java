@@ -2,6 +2,7 @@ package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
+
 import lombok.extern.slf4j.Slf4j;
 import net.logstash.logback.fieldnames.LogstashFieldNames;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ abstract class AbstractElkAppenderIntegrationTest {
     protected abstract DropwizardTestAppExtension dwApp();
 
     /**
-     * Implementating classes may override to provide different field name mappings.
+     * Implementing classes may override to provide different field name mappings.
      * 
      * @see ElkAppenderFactory#setFieldNames(Map)
      */

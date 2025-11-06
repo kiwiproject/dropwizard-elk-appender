@@ -65,7 +65,7 @@ The custom fields must be JSON, for example:
 { "serviceName": "invoice-service", "serviceHost": "dev-svc-1.acme.com", "serviceEnvironment": "dev" }
 ```
 
-As an example, if you wanted to use environment variables you could do it like this in a script:
+As an example, if you wanted to use environment variables, you could do it like this in a script:
 
 ```bash
 # export the environment variables
