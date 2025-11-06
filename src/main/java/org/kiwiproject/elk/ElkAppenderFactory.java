@@ -41,7 +41,7 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
 
     @Override
     public Appender<ILoggingEvent> build(LoggerContext loggerContext,
-                                         String s,
+                                         String applicationName,
                                          LayoutFactory<ILoggingEvent> layoutFactory,
                                          LevelFilterFactory<ILoggingEvent> levelFilterFactory,
                                          AsyncAppenderFactory<ILoggingEvent> asyncAppenderFactory) {
