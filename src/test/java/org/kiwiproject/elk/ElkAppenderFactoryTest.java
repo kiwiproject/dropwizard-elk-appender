@@ -2,6 +2,7 @@ package org.kiwiproject.elk;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -37,6 +38,25 @@ class ElkAppenderFactoryTest {
         loggerContext = new LoggerContext();
         filterFactory = new ThresholdLevelFilterFactory();
         appenderFactory = new AsyncLoggingEventAppenderFactory();
+    }
+
+    @Nested
+    class Constructor {
+
+        @Test
+        void shouldSetDefaultValues() {
+            var factory = new ElkAppenderFactory();
+
+            assertAll(
+                () -> assertThat(factory.isUseUdp()).isFalse(),
+                () -> assertThat(factory.isIncludeCallerData()).isFalse(),
+                () -> assertThat(factory.isIncludeContext()).isTrue(),
+                () -> assertThat(factory.isIncludeMdc()).isTrue(),
+                () -> assertThat(factory.getCustomFields()).isEmpty(),
+                () -> assertThat(factory.getFieldNames()).isEmpty(),
+                () -> assertThat(factory.getElkLoggerConfigProvider()).isNotNull()
+            );
+        }
     }
 
     @Nested

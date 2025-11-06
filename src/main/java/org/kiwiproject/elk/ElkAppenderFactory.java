@@ -12,6 +12,8 @@ import io.dropwizard.logging.common.AbstractAppenderFactory;
 import io.dropwizard.logging.common.async.AsyncAppenderFactory;
 import io.dropwizard.logging.common.filter.LevelFilterFactory;
 import io.dropwizard.logging.common.layout.LayoutFactory;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.Setter;
 import net.logstash.logback.appender.LogstashTcpSocketAppender;
 import net.logstash.logback.appender.LogstashUdpSocketAppender;
@@ -24,20 +26,107 @@ import org.kiwiproject.json.JsonHelper;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * An implementation of {@link io.dropwizard.logging.common.AppenderFactory AppenderFactory}
+ * that sends log messages to Logstash (the L in the ELK stack).
+ * <p>
+ * You don't use this directly, but instead configure it in your Dropwizard configuration file.
+ * For example, here is a configuration that uses only default values:
+ * <pre>
+ * logging:
+ *   level: WARN
+ *   loggers:
+ *     org.acme.service: INFO
+ *   appenders:
+ *     - type: elk
+ * </pre>
+ * And here's an example that uses UDP, doesn't include the logger context, and overrides
+ * some of the default Logstash field names:
+ * <pre>
+ * logging:
+ *   level: WARN
+ *   loggers:
+ *     org.acme.service: INFO
+ *   appenders:
+ *     - type: elk
+ *       useUdp: true
+ *       includeContext: false
+ *       fieldNames:
+ *         logger: loggerName
+ *         thread: threadName
+ *         level: logLevel
+ * </pre>
+ *  The available configuration properties are listed below.
+ * <table>
+ *     <caption>Configuration properties</caption>
+ *     <tr>
+ *         <td>Name</td>
+ *         <td>Default</td>
+ *         <td>Description</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code useUdp}</td>
+ *         <td>{@code false}</td>
+ *         <td>Whether to use UDP for connections to Logstash.</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code includeCallerData}</td>
+ *         <td>{@code false}</td>
+ *         <td>
+ *             Whether to include caller data, required for line numbers.
+ *             Beware, this is expensive as it creates a new Throwable on each logging call.
+ *         </td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code includeContext}</td>
+ *         <td>{@code true}</td>
+ *         <td>Whether to include the logging context in log messages.</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code includeMdc}</td>
+ *         <td>{@code true}</td>
+ *         <td>Whether to include the MDC (Message Diagnostic Context) in log messages.</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code customFields}</td>
+ *         <td>empty map</td>
+ *         <td>Custom fields that will be included in log messages.</td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code fieldNames}</td>
+ *         <td>empty map</td>
+ *         <td>
+ *             Map containing Logstash field name mappings.
+ *             These override the default values in {@link net.logstash.logback.fieldnames.LogstashFieldNames LogstashFieldNames}.
+ *         </td>
+ *     </tr>
+ * </table>
+ */
 @Setter
+@Getter(AccessLevel.PACKAGE)  // getters are visible with package scope for testing
 @JsonTypeName("elk")
 public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
 
     private static final JsonHelper JSON_HELPER = JsonHelper.newDropwizardJsonHelper();
 
     private boolean useUdp;
-    private boolean includeCallerData;
-    private boolean includeContext = true;
-    private boolean includeMdc = true;
-    private Map<String, String> customFields = new HashMap<>();
-    private Map<String, String> fieldNames = new HashMap<>();
+    @Getter(AccessLevel.PUBLIC) private boolean includeCallerData;  // must be public; getter in superclass is public
+    private boolean includeContext;
+    private boolean includeMdc;
+    private Map<String, String> customFields;
+    private Map<String, String> fieldNames;
+    @Setter(AccessLevel.NONE) private ElkLoggerConfigProvider elkLoggerConfigProvider;  // don't allow setting this
 
-    private ElkLoggerConfigProvider elkLoggerConfigProvider = ElkLoggerConfigProvider.builder().build();
+    /**
+     * Create a new instance with default values.
+     */
+    public ElkAppenderFactory() {
+        includeContext = true;
+        includeMdc = true;
+        customFields = new HashMap<>();
+        fieldNames = new HashMap<>();
+        elkLoggerConfigProvider = ElkLoggerConfigProvider.builder().build();
+    }
 
     @Override
     public Appender<ILoggingEvent> build(LoggerContext loggerContext,
