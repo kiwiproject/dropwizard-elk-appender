@@ -31,3 +31,16 @@ updates:
       - "sleberknight"
       - "chrisrohr"
 
+  # Docker image tracking (for test containers)
+  - package-ecosystem: "docker"
+    directory: "/dependabot-images"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-name: "docker.elastic.co/logstash/logstash"
+      - dependency-name: "toolbelt/netcat"
+    groups:
+      elk-stack:
+        patterns:
+          - "docker.elastic.co/logstash/logstash"
+          - "toolbelt/netcat"
