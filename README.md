@@ -52,14 +52,26 @@ Add to your Dropwizard configuration:
         - type: elk
 ```
 
-The connection details of the Logstash server must be set, _but this cannot be done
-directly in the Dropwizard configuration._
-
-To set the host and port of the Logstash server, as well as custom fields, you can use system
-properties, environment variables, or a configuration file as defined by
+The connection details of the Logstash server must be set, and can be done by
+manually configuring `host` and `port` or by using values provided by
 [ElkLoggerConfigProvider](https://javadoc.io/doc/org.kiwiproject/dropwizard-config-providers/latest/org/kiwiproject/config/provider/ElkLoggerConfigProvider.html).
 
-The custom fields must be JSON, for example:
+The `customFields` property will send custom fields with every log message.
+Common things to send are service name, version, deployment environment, etc.
+These can either be explicitly configured or provided by `ElkLoggerConfigProvider`.
+Entries with blank keys or values are ignored when generating custom fields JSON.
+
+When many services all send data to the same Logstash server, it's generally
+preferred to configure using  `ElkLoggerConfigProvider` to avoid duplicating
+configuration in every service.
+
+If you are relying on `ElkLoggerConfigProvider` to provide values for `host`,
+`port`, and optionally `customFields`, you can use system properties, environment variables,
+or a configuration file. See the `ElkLoggerConfigProvider`
+[documentation](https://javadoc.io/doc/org.kiwiproject/dropwizard-config-providers/latest/org/kiwiproject/config/provider/ElkLoggerConfigProvider.html)
+for details.
+
+However configured, the custom fields must be JSON, for example:
 
 ```json
 { "serviceName": "invoice-service", "serviceHost": "dev-svc-1.acme.com", "serviceEnvironment": "dev" }
@@ -81,13 +93,16 @@ java -jar /opt/service/invoice-service/service.jar server /opt/service/invoice-s
 
 The properties that can be set in the Dropwizard configuration are:
 
-| Property Name     | Default | Description                                                         |
-|-------------------|---------|---------------------------------------------------------------------|
-| includeCallerData | false   | Whether the caller data is included in the message to logstash      |
-| includeContext    | true    | Whether to include the logging context in the message to logstash   |
-| includeMdc        | true    | Whether to include the MDC in the message to logstash               |
-| fieldNames        | empty   | Map of Logstash field name mappings if overrides are needed         |
-| useUdp            | false   | Whether to use UDP instead of the default TCP for connections       |
+| Property Name     | Default | Description                                                                                                                                                                                |
+|-------------------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| host              | null    | The logstash host. If not provided, fall back to ElkLoggerConfigProvider.                                                                                                                  |
+| port              | null    | The logstash port. If not provided, fall back to ElkLoggerConfigProvider.                                                                                                                  |                                                         |
+| includeCallerData | false   | Whether the caller data is included in the message to logstash                                                                                                                             |
+| includeContext    | true    | Whether to include the logging context in the message to logstash                                                                                                                          |
+| includeMdc        | true    | Whether to include the MDC in the message to logstash                                                                                                                                      |
+| fieldNames        | empty   | Map of Logstash field name mappings if overrides are needed                                                                                                                                |
+| customFields      | empty   | Custom fields to send in the message to logstash. If not provided, fall back to ElkLoggerConfigProvider. Entries with blank keys or values are ignored when generating custom fields JSON. |
+| useUdp            | false   | Whether to use UDP instead of the default TCP for connections                                                                                                                              |
 
 Below is a custom configuration that does not include the [logging context](https://logback.qos.ch/manual/architecture.html#LoggerContext)
 or the [MDC](https://logback.qos.ch/manual/mdc.html).

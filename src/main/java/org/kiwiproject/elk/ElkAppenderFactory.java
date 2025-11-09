@@ -1,6 +1,11 @@
 package org.kiwiproject.elk;
 
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static java.util.stream.Collectors.toMap;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.kiwiproject.collect.KiwiMaps.isNotNullOrEmpty;
 import static org.kiwiproject.collect.KiwiMaps.isNullOrEmpty;
 
@@ -18,6 +23,7 @@ import lombok.Setter;
 import net.logstash.logback.appender.LogstashTcpSocketAppender;
 import net.logstash.logback.appender.LogstashUdpSocketAppender;
 import net.logstash.logback.encoder.LogstashEncoder;
+import net.logstash.logback.fieldnames.LogstashFieldNames;
 import net.logstash.logback.layout.LogstashLayout;
 import org.kiwiproject.config.provider.ElkLoggerConfigProvider;
 import org.kiwiproject.config.provider.ResolvedBy;
@@ -25,6 +31,7 @@ import org.kiwiproject.json.JsonHelper;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * An implementation of {@link io.dropwizard.logging.common.AppenderFactory AppenderFactory}
@@ -65,6 +72,22 @@ import java.util.Map;
  *         <td>Description</td>
  *     </tr>
  *     <tr>
+ *         <td>{@code host}</td>
+ *         <td>{@code null}</td>
+ *         <td>
+ *             The Logstash host. If not provided, then fall back to the value
+ *             provided by {@link ElkLoggerConfigProvider}.
+ *         </td>
+ *     </tr>
+ *     <tr>
+ *         <td>{@code port}</td>
+ *         <td>{@code null}</td>
+ *         <td>
+ *             The Logstash port. If not provided, then fall back to the value
+ *             provided by {@link ElkLoggerConfigProvider}.
+ *         </td>
+ *     </tr>
+ *     <tr>
  *         <td>{@code useUdp}</td>
  *         <td>{@code false}</td>
  *         <td>Whether to use UDP for connections to Logstash.</td>
@@ -90,7 +113,12 @@ import java.util.Map;
  *     <tr>
  *         <td>{@code customFields}</td>
  *         <td>empty map</td>
- *         <td>Custom fields that will be included in log messages.</td>
+ *         <td>
+ *             Custom fields that will be included in log messages.
+ *             If not provided, then fall back to the value provided
+ *             by {@link ElkLoggerConfigProvider}. Entries with blank
+ *             keys or values are ignored when generating custom fields JSON.
+ *         </td>
  *     </tr>
  *     <tr>
  *         <td>{@code fieldNames}</td>
@@ -101,6 +129,16 @@ import java.util.Map;
  *         </td>
  *     </tr>
  * </table>
+ *
+ * Note that if either {@code host} or {@code port} is not specified, the fallback
+ * {@link ElkLoggerConfigProvider} must be able to provide its value or an
+ * {@code IllegalStateException} is thrown. For example, if {@code host} is set
+ * on the factory, but {@code port} is not, then the {@link ElkLoggerConfigProvider}
+ * must be able to provide the {@code port}.
+ * <p>
+ * If any {@code customFields} are specified on the factory, those values are used
+ * and any value provided by {@link ElkLoggerConfigProvider} is ignored. In other words,
+ * currently there is not a merge capability.
  */
 @Setter
 @Getter(AccessLevel.PACKAGE)  // getters are visible with package scope for testing
@@ -108,9 +146,14 @@ import java.util.Map;
 public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
 
     private static final JsonHelper JSON_HELPER = JsonHelper.newDropwizardJsonHelper();
+    private static final String ELK_PROVIDER_ERROR_MESSAGE_TEMPLATE =
+            "Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
+                    " Host resolution: %s, Port resolution: %s";
 
     // NOTE: includeCallerData is handled by the inherited setter/getter from AbstractAppenderFactory
-    
+
+    private String host;
+    private Integer port;
     private boolean useUdp;
     private boolean includeContext;
     private boolean includeMdc;
@@ -137,16 +180,29 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
                                          AsyncAppenderFactory<ILoggingEvent> asyncAppenderFactory) {
 
         Map<String, ResolvedBy> resolvedBy = elkLoggerConfigProvider.getResolvedBy();
-        checkState(elkLoggerConfigProvider.canProvide(),
-                "Unable to get ELK host and/or port from ElkLoggerConfigProvider." +
-                " Host resolution: %s, Port resolution: %s",
-                resolvedBy.get("host"), resolvedBy.get("port"));
+        var hostResolvedBy = resolvedBy.get("host");
+        var portResolvedBy = resolvedBy.get("port");
 
-        if (isNullOrEmpty(customFields)) {
-            customFields = elkLoggerConfigProvider.getCustomFields();
+        if (isBlank(host)) {
+            checkState(canProvideHost(resolvedBy),
+                    ELK_PROVIDER_ERROR_MESSAGE_TEMPLATE, hostResolvedBy, portResolvedBy);
+
+            host = elkLoggerConfigProvider.getHost();
         }
 
-        var appender = useUdp ? createUdpAppender() : createTcpAppender();
+        if (isNull(port)) {
+            checkState(canProvidePort(resolvedBy),
+                    ELK_PROVIDER_ERROR_MESSAGE_TEMPLATE, hostResolvedBy, portResolvedBy);
+
+            port = elkLoggerConfigProvider.getPort();
+        }
+
+        var providerCustomFields = elkLoggerConfigProvider.getCustomFields();
+        if (isNullOrEmpty(customFields) && nonNull(providerCustomFields)) {
+            customFields = new HashMap<>(providerCustomFields);
+        }
+
+        var appender = createAppender();
 
         appender.setName("elk");
         appender.setContext(loggerContext);
@@ -154,6 +210,24 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
         appender.start();
 
         return wrapAsync(appender, asyncAppenderFactory);
+    }
+
+    private static boolean canProvideHost(Map<String, ResolvedBy> resolvedBy) {
+        return canProvide(resolvedBy, "host");
+    }
+
+    private static boolean canProvidePort(Map<String, ResolvedBy> resolvedBy) {
+        return canProvide(resolvedBy, "port");
+    }
+
+    private static boolean canProvide(Map<String, ResolvedBy> resolvedBy, String property) {
+        return resolvedBy.get(property) != ResolvedBy.NONE;
+    }
+
+    private Appender<ILoggingEvent> createAppender() {
+        checkState(port > 0 && port < 65536, "port %s is not a valid port (must be in range 1-65535)", port);
+
+        return useUdp ? createUdpAppender() : createTcpAppender();
     }
 
     @SuppressWarnings("DuplicatedCode")
@@ -164,15 +238,15 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
         encoder.setIncludeContext(includeContext);
 
         if (isNotNullOrEmpty(customFields)) {
-            encoder.setCustomFields(JSON_HELPER.toJson(customFields));
+            getCustomFieldsAsJson().ifPresent(encoder::setCustomFields);
         }
 
         if (isNotNullOrEmpty(fieldNames)) {
-            encoder.setFieldNames(ElkFieldHelper.getFieldNamesFromMap(fieldNames));
+            encoder.setFieldNames(getLogstashFieldNames());
         }
 
         var appender = new LogstashTcpSocketAppender();
-        appender.addDestination(elkLoggerConfigProvider.getHost() + ":" + elkLoggerConfigProvider.getPort());
+        appender.addDestination(host + ":" + port);
         appender.setEncoder(encoder);
 
         return appender;
@@ -186,18 +260,32 @@ public class ElkAppenderFactory extends AbstractAppenderFactory<ILoggingEvent> {
         layout.setIncludeContext(includeContext);
 
         if (isNotNullOrEmpty(customFields)) {
-            layout.setCustomFields(JSON_HELPER.toJson(customFields));
+            getCustomFieldsAsJson().ifPresent(layout::setCustomFields);
         }
 
         if (isNotNullOrEmpty(fieldNames)) {
-            layout.setFieldNames(ElkFieldHelper.getFieldNamesFromMap(fieldNames));
+            layout.setFieldNames(getLogstashFieldNames());
         }
 
         var appender = new LogstashUdpSocketAppender();
-        appender.setHost(elkLoggerConfigProvider.getHost());
-        appender.setPort(elkLoggerConfigProvider.getPort());
+        appender.setHost(host);
+        appender.setPort(port);
         appender.setLayout(layout);
 
         return appender;
+    }
+
+    private Optional<String> getCustomFieldsAsJson() {
+        var filteredCustomFields = customFields.entrySet()
+                .stream()
+                .filter(entry -> isNotBlank(entry.getKey()) && isNotBlank(entry.getValue()))
+                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        return filteredCustomFields.isEmpty() ?
+                Optional.empty() : Optional.of(JSON_HELPER.toJson(filteredCustomFields));
+    }
+
+    private LogstashFieldNames getLogstashFieldNames() {
+        return ElkFieldHelper.getFieldNamesFromMap(fieldNames);
     }
 }
