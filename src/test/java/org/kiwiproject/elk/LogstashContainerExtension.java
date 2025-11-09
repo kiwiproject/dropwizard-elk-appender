@@ -27,6 +27,8 @@ import org.testcontainers.utility.DockerImageName;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +43,35 @@ import java.util.Map;
 @Slf4j
 public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCallback {
 
-    private static final DockerImageName LOGSTASH_IMAGE = 
-            DockerImageName.parse("docker.elastic.co/logstash/logstash:9.2.0");
+    private static final DockerImageName LOGSTASH_IMAGE =
+            getDockerImageName("logstash");
 
     private static final DockerImageName NETCAT_IMAGE_NAME =
-            DockerImageName.parse("toolbelt/netcat:2025-10-23");
+            getDockerImageName("netcat");
+
+    private static DockerImageName getDockerImageName(String dockerfileExtension) {
+        var imageName = getImageName(dockerfileExtension);
+        LOG.info("Using docker image: {}", imageName);
+
+        return DockerImageName.parse(imageName);
+    }
+
+    private static String getImageName(String dockerfileExtension) {
+        return getFullImageName(dockerfileExtension);
+    }
+
+    private static String getFullImageName(String dockerfileExtension) {
+        var dockerfilePath = Path.of("dependabot-images", "Dockerfile." + dockerfileExtension);
+        try (var lines = Files.lines(dockerfilePath)) {
+            return lines
+                    .filter(line -> line.startsWith("FROM"))
+                    .map(line -> line.substring("FROM ".length()))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalStateException("Unable to get full image name from Dockerfile: " + dockerfilePath));
+        } catch (IOException e) {
+            throw new UncheckedIOException("Unable to read: " + dockerfilePath, e);
+        }
+    }
 
     /**
      * The type of Logstash container.
