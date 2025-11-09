@@ -43,11 +43,9 @@ import java.util.Map;
 @Slf4j
 public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCallback {
 
-    private static final DockerImageName LOGSTASH_IMAGE =
-            getDockerImageName("logstash");
+    private static final DockerImageName LOGSTASH_IMAGE = getDockerImageName("logstash");
 
-    private static final DockerImageName NETCAT_IMAGE_NAME =
-            getDockerImageName("netcat");
+    private static final DockerImageName NETCAT_IMAGE_NAME = getDockerImageName("netcat");
 
     private static DockerImageName getDockerImageName(String dockerfileExtension) {
         var imageName = getImageName(dockerfileExtension);
