@@ -61,7 +61,7 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
     }
 
     private static String getFullImageName(String dockerfileExtension) {
-        var dockerfilePath = Path.of("dependabot-images", "Dockerfile." + dockerfileExtension);
+        var dockerfilePath = Path.of(".github/dependabot-images", "Dockerfile." + dockerfileExtension);
         try (var lines = Files.lines(dockerfilePath)) {
             return lines
                     .filter(line -> line.startsWith("FROM"))
