@@ -33,7 +33,7 @@ updates:
 
   # Docker image tracking (for test containers)
   - package-ecosystem: "docker"
-    directory: "/dependabot-images"
+    directory: ".github/dependabot-images"
     schedule:
       interval: "weekly"
     groups:
@@ -41,3 +41,6 @@ updates:
         patterns:
           - "docker.elastic.co/logstash/logstash"
           - "toolbelt/netcat"
+      assignees:
+      - "sleberknight"
+      - "chrisrohr"
