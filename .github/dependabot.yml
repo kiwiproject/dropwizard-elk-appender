@@ -41,6 +41,6 @@ updates:
         patterns:
           - "docker.elastic.co/logstash/logstash"
           - "toolbelt/netcat"
-      assignees:
+    assignees:
       - "sleberknight"
       - "chrisrohr"
