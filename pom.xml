@@ -29,6 +29,7 @@
     <properties>
         <!-- Versions for required dependencies -->
         <dropwizard-config-providers.version>3.0.0</dropwizard-config-providers.version>
+        <jackson3.version>3.1.0</jackson3.version>
         <kiwi.version>5.1.0</kiwi.version>
         <kiwi-test.version>4.0.0</kiwi-test.version>
         <kiwi-bom.version>3.0.3</kiwi-bom.version>
@@ -46,6 +47,14 @@
                 <groupId>org.kiwiproject</groupId>
                 <artifactId>kiwi-bom</artifactId>
                 <version>${kiwi-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>tools.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>${jackson3.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
