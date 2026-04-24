@@ -1,2 +1,2 @@
 # Dummy file for Dependabot image tracking
-FROM toolbelt/netcat:2026-03-23
+FROM toolbelt/netcat:2026-04-23
