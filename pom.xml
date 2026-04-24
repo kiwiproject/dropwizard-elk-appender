@@ -30,7 +30,7 @@
         <!-- Versions for required dependencies -->
         <dropwizard-config-providers.version>3.0.2</dropwizard-config-providers.version>
         <jackson3.version>3.1.2</jackson3.version>
-        <kiwi.version>5.2.0</kiwi.version>
+        <kiwi.version>5.3.1</kiwi.version>
         <kiwi-test.version>4.0.2</kiwi-test.version>
         <kiwi-bom.version>3.1.0</kiwi-bom.version>
 
