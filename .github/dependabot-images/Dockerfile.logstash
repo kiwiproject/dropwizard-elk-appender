@@ -1,2 +1,2 @@
 # Dummy file for Dependabot image tracking
-FROM docker.elastic.co/logstash/logstash:9.3.4
+FROM docker.elastic.co/logstash/logstash:9.4.0
