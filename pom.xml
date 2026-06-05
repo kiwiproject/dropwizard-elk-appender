@@ -36,8 +36,6 @@
 
         <!-- Sonar Properties -->
         <sonar.projectKey>kiwiproject_dropwizard-elk-appender</sonar.projectKey>
-        <sonar.organization>kiwiproject</sonar.organization>
-        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
     </properties>
 
