@@ -47,15 +47,15 @@ public class LogstashContainerExtension implements BeforeAllCallback, AfterAllCa
 
     private static final DockerImageName NETCAT_IMAGE_NAME = getDockerImageName("netcat");
 
-    private static DockerImageName getDockerImageName(String dockerfileExtension) {
-        var imageName = getFullImageName(dockerfileExtension);
+    private static DockerImageName getDockerImageName(String directoryName) {
+        var imageName = getFullImageName(directoryName);
         LOG.info("Using docker image: {}", imageName);
 
         return DockerImageName.parse(imageName);
     }
 
-    private static String getFullImageName(String dockerfileExtension) {
-        var dockerfilePath = Path.of(".github/dependabot-images", "Dockerfile." + dockerfileExtension);
+    private static String getFullImageName(String directoryName) {
+        var dockerfilePath = Path.of(".github/dependabot-images", directoryName, "Dockerfile");
         LOG.info("Getting image name from: {}", dockerfilePath);
 
         try (var lines = Files.lines(dockerfilePath)) {
