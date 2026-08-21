@@ -30,7 +30,7 @@
         <!-- Versions for required dependencies -->
         <dropwizard-config-providers.version>3.0.3</dropwizard-config-providers.version>
         <kiwi.version>5.4.0</kiwi.version>
-        <kiwi-test.version>4.2.0</kiwi-test.version>
+        <kiwi-test.version>4.3.0</kiwi-test.version>
         <kiwi-bom.version>3.3.3</kiwi-bom.version>
 
         <!-- Sonar Properties -->
